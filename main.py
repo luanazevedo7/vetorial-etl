@@ -4,24 +4,27 @@ import requests
 import pandas as pd
 import schedule
 import logging
-import pytz  # Para corrigir a hora
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from sqlalchemy import create_engine, text
 import json
 
 
-# --- CONFIGURAÇÃO DE LOGS (HORA BRASIL) ---
-def brazil_time(*args):
-    return datetime.now(pytz.timezone("America/Sao_Paulo")).timetuple()
+# --- CONFIGURAÇÃO DE LOGS (HORA BRASIL - SEM PYTZ) ---
+# Isso resolve o problema da hora mostrando 3h a mais
+class BrazilFormatter(logging.Formatter):
+    def formatTime(self, record, datefmt=None):
+        dt = datetime.fromtimestamp(record.created, timezone.utc) - timedelta(hours=3)
+        return dt.strftime(datefmt if datefmt else "%Y-%m-%d %H:%M:%S")
 
 
-logging.Formatter.converter = brazil_time
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S",
-)
-logger = logging.getLogger(__name__)
+handler = logging.StreamHandler()
+handler.setFormatter(BrazilFormatter("%(asctime)s - %(levelname)s - %(message)s"))
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+# Limpa handlers antigos para não duplicar logs
+if logger.hasHandlers():
+    logger.handlers.clear()
+logger.addHandler(handler)
 
 # --- CONFIGURAÇÕES DE AMBIENTE ---
 DB_HOST = os.getenv("DB_HOST", "patroni_primary")
@@ -50,7 +53,7 @@ def get_date_range():
 
 
 def clear_existing_data(account_id, since, until):
-    """Apaga os dados do período ANTES de começar a baixar, para evitar duplicidade"""
+    """NOVIDADE: Apaga dados antigos ANTES de começar, para evitar duplicidade"""
     try:
         with engine.begin() as conn:
             conn.execute(
@@ -59,13 +62,13 @@ def clear_existing_data(account_id, since, until):
                 ),
                 {"acc": account_id, "s": since, "u": until},
             )
-        logger.info(f"🧹 Limpeza inicial realizada para a conta {account_id}")
+        logger.info(f"🧹 Limpeza prévia realizada para a conta {account_id}")
     except Exception as e:
-        logger.error(f"Erro ao limpar dados antigos: {e}")
+        logger.error(f"Erro ao limpar dados: {e}")
 
 
 def transform_and_load(raw_data_page, account_id):
-    """Processa UMA página e salva imediatamente para liberar memória"""
+    """NOVIDADE: Processa e salva IMEDIATAMENTE (Streaming)"""
     if not raw_data_page:
         return
 
@@ -73,7 +76,6 @@ def transform_and_load(raw_data_page, account_id):
     df["account_id"] = account_id
     df["nome_conta"] = f"Conta {account_id}"
 
-    # Funções auxiliares de transformação
     def process_actions(row, action_type_target):
         if isinstance(row, list):
             for item in row:
@@ -81,45 +83,29 @@ def transform_and_load(raw_data_page, account_id):
                     return float(item.get("value", 0))
         return 0.0
 
-    # Tratamento numérico
-    df["impressoes"] = pd.to_numeric(df.get("impressions", 0)).fillna(0)
-    df["valor_gasto"] = pd.to_numeric(df.get("spend", 0)).fillna(0)
-    df["clique_link"] = pd.to_numeric(df.get("inline_link_clicks", 0)).fillna(0)
+    # Tratamento numérico seguro
+    for col in ["impressions", "spend", "inline_link_clicks"]:
+        df[col] = pd.to_numeric(df.get(col, 0)).fillna(0)
 
-    # Extração de Actions
+    # Mapeamento de Actions
     if "actions" in df.columns:
-        df["lp_view"] = df["actions"].apply(
-            lambda x: process_actions(x, "landing_page_view")
-        )
-        df["lead"] = df["actions"].apply(lambda x: process_actions(x, "lead"))
-        df["contato"] = df["actions"].apply(lambda x: process_actions(x, "contact"))
-        df["conversas_iniciadas"] = df["actions"].apply(
-            lambda x: process_actions(
-                x, "onsite_conversion.messaging_conversation_started_7d"
-            )
-        )
-        df["novos_contatos_mensagem"] = df["actions"].apply(
-            lambda x: process_actions(x, "onsite_conversion.messaging_first_reply")
-        )
-        df["seguidores_instagram"] = df["actions"].apply(
-            lambda x: process_actions(x, "follow")
-        )
-        df["visitas_perfil"] = df["actions"].apply(
-            lambda x: process_actions(x, "profile_visit")
-        )
-        df["initiate_checkout"] = df["actions"].apply(
-            lambda x: process_actions(x, "initiate_checkout")
-        )
-        df["compras"] = df["actions"].apply(lambda x: process_actions(x, "purchase"))
-        df["cliques_saida"] = df["actions"].apply(
-            lambda x: process_actions(x, "outbound_click")
-        )
-        df["videoview_3s"] = df["actions"].apply(
-            lambda x: process_actions(x, "video_view")
-        )
+        mapping = {
+            "lp_view": "landing_page_view",
+            "lead": "lead",
+            "contato": "contact",
+            "conversas_iniciadas": "onsite_conversion.messaging_conversation_started_7d",
+            "novos_contatos_mensagem": "onsite_conversion.messaging_first_reply",
+            "seguidores_instagram": "follow",
+            "visitas_perfil": "profile_visit",
+            "initiate_checkout": "initiate_checkout",
+            "compras": "purchase",
+            "cliques_saida": "outbound_click",
+            "videoview_3s": "video_view",
+        }
+        for col, key in mapping.items():
+            df[col] = df["actions"].apply(lambda x: process_actions(x, key))
     else:
-        # Se actions não vier, preenche tudo com 0
-        cols_actions = [
+        cols = [
             "lp_view",
             "lead",
             "contato",
@@ -132,7 +118,7 @@ def transform_and_load(raw_data_page, account_id):
             "cliques_saida",
             "videoview_3s",
         ]
-        for c in cols_actions:
+        for c in cols:
             df[c] = 0.0
 
     df["valor_compra"] = 0.0
@@ -150,6 +136,9 @@ def transform_and_load(raw_data_page, account_id):
             "date_start": "data_registro",
             "publisher_platform": "plataforma",
             "platform_position": "posicionamento",
+            "spend": "valor_gasto",
+            "impressions": "impressoes",
+            "inline_link_clicks": "clique_link",
         },
         inplace=True,
     )
@@ -189,19 +178,19 @@ def transform_and_load(raw_data_page, account_id):
         if col not in df.columns:
             df[col] = 0
 
-    # SALVAMENTO IMEDIATO DA PÁGINA
     try:
         with engine.begin() as conn:
+            # Chunksize menor para garantir que passa no cano
             df[final_cols].to_sql(
                 "insights_meta_ads",
                 conn,
                 if_exists="append",
                 index=False,
                 method="multi",
-                chunksize=1000,
+                chunksize=500,
             )
     except Exception as e:
-        logger.error(f"Erro ao salvar página no banco: {e}")
+        logger.error(f"Erro ao salvar no banco: {e}")
 
 
 def fetch_and_process(account_id, since, until):
@@ -209,11 +198,10 @@ def fetch_and_process(account_id, since, until):
     if not clean_id.startswith("act_"):
         clean_id = f"act_{clean_id}"
 
-    # 1. LIMPA DADOS ANTIGOS ANTES DE COMEÇAR
+    # 1. Limpa TUDO antes de começar
     clear_existing_data(clean_id, since, until)
 
     url = f"{BASE_URL}/{clean_id}/insights"
-
     fields = [
         "campaign_id",
         "campaign_name",
@@ -234,40 +222,39 @@ def fetch_and_process(account_id, since, until):
         "time_increment": 1,
         "fields": ",".join(fields),
         "breakdowns": "publisher_platform,platform_position",
-        "limit": 50,  # Mantém lote pequeno para economizar memória
+        "limit": 50,
     }
 
-    page_count = 0
-    total_saved = 0
+    page = 0
+    total = 0
 
     while True:
         try:
-            page_count += 1
+            page += 1
             response = requests.get(url, params=params, timeout=60)
 
             if response.status_code != 200:
-                logger.error(f"❌ ERRO META API (Conta {clean_id}): {response.text}")
-                break  # Para essa conta e vai para a próxima
+                logger.error(f"❌ Erro API ({clean_id}): {response.text}")
+                break
 
             data = response.json()
 
             if "data" in data and len(data["data"]) > 0:
-                # PROCESSA E SALVA AGORA!
+                # 2. Salva AGORA (não guarda na memória)
                 transform_and_load(data["data"], clean_id)
-                current_batch = len(data["data"])
-                total_saved += current_batch
+                count = len(data["data"])
+                total += count
                 logger.info(
-                    f"   💾 Página {page_count} salva: +{current_batch} registros (Total na conta: {total_saved})"
+                    f"   💾 Pág {page} salva (+{count} regs) | Total conta: {total}"
                 )
 
-            # Rate Limit
             if "x-fb-ads-insights-throttle" in response.headers:
                 try:
                     throttle = json.loads(
                         response.headers["x-fb-ads-insights-throttle"]
                     )
                     if throttle.get("acc_id_util_pct", 0) > 90:
-                        logger.warning("⚠️ Rate limit alto. Pausando 3 min...")
+                        logger.warning("⚠️ Rate limit alto. Pausa de 3 min.")
                         time.sleep(180)
                 except:
                     pass
@@ -276,29 +263,34 @@ def fetch_and_process(account_id, since, until):
                 url = data["paging"]["next"]
                 params = {}
             else:
-                logger.info(
-                    f"🏁 Fim da conta {clean_id}. Total processado: {total_saved} registros."
-                )
+                logger.info(f"🏁 Conta {clean_id} finalizada. Total: {total}")
                 break
 
         except Exception as e:
-            logger.error(f"❌ Falha fatal na página {page_count}: {e}")
+            logger.error(f"❌ Erro fatal pág {page}: {e}")
             break
 
 
 def run_etl():
-    logger.info("INICIANDO JOB ETL META ADS (Modo Streaming - Baixa RAM)")
+    logger.info("🚀 INICIANDO ETL (Modo Otimizado - Baixa RAM)")
     since, until = get_date_range()
-    accounts = [acc.strip() for acc in AD_ACCOUNT_ID_LIST if acc.strip()]
+
+    # Tratamento seguro para lista vazia
+    raw_accounts = os.getenv("AD_ACCOUNTS", "")
+    accounts = [acc.strip() for acc in raw_accounts.split(",") if acc.strip()]
+
+    if not accounts:
+        logger.warning("⚠️ Nenhuma conta configurada em AD_ACCOUNTS!")
+        return
 
     for account_id in accounts:
-        logger.info(f"--- Processando conta: {account_id} ---")
+        logger.info(f"--- Iniciando {account_id} ---")
         fetch_and_process(account_id, since, until)
 
-    logger.info("JOB FINALIZADO - Aguardando 4 horas")
+    logger.info("✅ JOB FINALIZADO - Próxima execução em 4h")
 
 
-# Execução
+# Loop
 run_etl()
 schedule.every(4).hours.do(run_etl)
 while True:
