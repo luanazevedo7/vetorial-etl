@@ -2,35 +2,22 @@ version: '3.8'
 
 services:
   meta_etl_worker:
-    # Garanta que seu usuário do Docker Hub esteja aqui ou nas variáveis
-    image: ${DOCKER_USERNAME}/etl-meta-ads:v2
+    image: covillabs/etl-meta-ads:v2
+    # O comando 'tty: true' ajuda a manter o container vivo em alguns ambientes
+    tty: true
     deploy:
-      mode: replicated
       replicas: 1
-      # REMOVI O PLACEMENT PARA EVITAR O ERRO 'REJECTED' EM SERVIDOR ÚNICO
-      # placement:
-      #   constraints:
-      #     - node.role == worker
-      resources:
-        limits:
-          cpus: "0.5"
-          memory: 512M  # Mantido conforme pedido da Vetorial
-        reservations:
-          cpus: "0.25"
-          memory: 256M
       restart_policy:
         condition: on-failure
-        delay: 5s
-        max_attempts: 3
-        window: 120s
-      update_config:
-        parallelism: 1
         delay: 10s
-        failure_action: rollback
+      resources:
+        limits:
+          memory: 512M # Mantendo o limite da Vetorial
+        reservations:
+          memory: 256M
         
     environment:
       - PYTHONUNBUFFERED=1
-      # AQUI ESTÁ O SEGREDO: DB_HOST deve ser 'patroni_primary' no Portainer
       - DB_HOST=${DB_HOST:-patroni_primary}
       - DB_PORT=${DB_PORT:-5432}
       - DB_NAME=${DB_NAME:-relatorio_meta_ads}
@@ -40,14 +27,8 @@ services:
       - AD_ACCOUNTS=${AD_ACCOUNTS}
       
     networks:
-      - network_public  # <--- MUDANÇA CRUCIAL: Nome da rede onde o banco está
-
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
+      - network_public
 
 networks:
   network_public:
-    external: true  # <--- Diz pro Docker: "Use a rede pública que já existe"
+    external: true
