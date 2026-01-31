@@ -63,9 +63,11 @@ def check_rate_limit(headers):
 
 
 def fetch_meta_data(account_id, since, until):
-    """Busca dados na API da Meta com paginação"""
+    """Busca dados na API da Meta com paginação e Tratamento de Erro Detalhado"""
     url = f"{BASE_URL}/{account_id}/insights"
 
+    # ⚠️ REMOVI action_values TEMPORARIAMENTE POIS ELE COSTUMA DAR CONFLITO COM BREAKDOWNS
+    # Se funcionar sem ele, sabemos que ele era o culpado.
     fields = [
         "campaign_id",
         "campaign_name",
@@ -78,8 +80,8 @@ def fetch_meta_data(account_id, since, until):
         "inline_link_clicks",
         "actions",
         "action_values",
-        # "video_p50_watched_actions",
-        # "video_p75_watched_actions",
+        "video_p50_watched_actions",
+        "video_p75_watched_actions",
     ]
 
     params = {
@@ -93,35 +95,33 @@ def fetch_meta_data(account_id, since, until):
     }
 
     all_data = []
-    page_count = 0
 
     while True:
         try:
-            response = requests.get(url, params=params, timeout=60)
-            response.raise_for_status()
-            data = response.json()
+            response = requests.get(url, params=params)
 
+            # --- O PULO DO GATO: LER O ERRO ---
+            if response.status_code != 200:
+                logger.error(f"❌ ERRO META API DETALHADO: {response.text}")
+                response.raise_for_status()  # Isso vai parar o script e ir pro 'except'
+            # ----------------------------------
+
+            data = response.json()
             check_rate_limit(response.headers)
 
             if "data" in data:
                 all_data.extend(data["data"])
-                page_count += 1
-                logger.info(
-                    f"Conta {account_id}: Página {page_count} - {len(data['data'])} registros"
-                )
 
-            # Paginação
             if "paging" in data and "next" in data["paging"]:
                 url = data["paging"]["next"]
                 params = {}
             else:
                 break
 
-        except requests.exceptions.RequestException as e:
+        except Exception as e:
             logger.error(f"Erro na requisição para conta {account_id}: {e}")
             break
 
-    logger.info(f"Total extraído da conta {account_id}: {len(all_data)} registros")
     return all_data
 
 
