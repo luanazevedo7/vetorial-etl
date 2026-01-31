@@ -1,0 +1,4114 @@
+Documentação META
+
+
+
+Visão geral
+
+A API de Marketing é uma ferramenta de negócios da Meta projetada para permitir que desenvolvedores e profissionais de marketing automatizem as iniciativas de publicidade nas tecnologias da Meta. Ela oferece um conjunto abrangente de funcionalidades que simplificam os processos de criação, gerenciamento e análise de desempenho de anúncios.
+
+Um dos principais recursos da API de Marketing é a capacidade de facilitar a criação automatizada de anúncios. Você pode usar uma programação para gerar campanhas de anúncios, conjuntos de anúncios e anúncios individuais, permitindo uma rápida implantação e iteração com base em dados de desempenho em tempo real. Essa automação também permite que as empresas alcancem públicos mais amplos com eficiência.
+
+Além da criação de anúncios, você pode fazer o seguinte:
+
+Atualizar, pausar ou excluir anúncios sem problemas
+
+Garantir que as campanhas permaneçam alinhadas com os objetivos comerciais
+
+Acessar insights e análises detalhados para acompanhar o desempenho dos anúncios e tomar decisões baseadas em dados para melhorar os resultados
+
+Como funciona
+
+
+
+
+
+Campanhas de anúncios
+
+A campanha é o nível mais alto da estrutura organizacional da conta de anúncios e deve representar um objetivo único, por exemplo, para estimular o engajamento de publicações na Página. Definir o objetivo da campanha aplica a validação de quaisquer anúncios adicionados a essa campanha para garantir que eles também tenham o objetivo correto.
+
+Conjuntos de anúncios
+
+Conjuntos de anúncios são grupos de anúncios usados para configurar o orçamento e o período para o qual os anúncios devem ser veiculados. Todos os anúncios contidos em um conjunto devem ter o mesmo direcionamento, orçamento, a mesma cobrança, meta de otimização e duração.
+
+Crie um conjunto de anúncios para cada público-alvo com seu lance; os anúncios no conjunto são direcionados para o mesmo público com o mesmo lance. Isso ajudará você a controlar o quanto gasta com cada público, a determinar quando o público verá seus anúncios e fornecer métricas para cada público.
+
+Criativos do anúncio
+
+Os criativos do anúncio contêm apenas os elementos visuais do anúncio, e não é possível alterá-los depois da criação. Cada conta de anúncios tem uma biblioteca para armazenar criativos para reutilização em anúncios.
+
+Anúncios
+
+Um objeto de anúncio contém todas as informações necessárias para exibir um anúncio no Facebook, Instagram, Messenger e WhatsApp, incluindo o criativo do anúncio. Crie vários anúncios em cada conjunto para otimizar a veiculação de anúncios com base em diferentes imagens, links, vídeo, texto ou posicionamentos.
+
+
+
+Controle de versões
+
+A versão atual da API de Marketing é v24.0.
+
+A plataforma do Facebook tem um modelo de controle de versões principal e um ampliado. Com o controle de versões da API de Marketing, todas as alterações importantes serão lançadas em uma nova versão. As diversas versões das APIs de Marketing ou dos SDKs podem coexistir com funcionalidades diferentes em cada versão.
+
+Os desenvolvedores devem saber com antecedência quando uma API de Marketing ou um SDK sofrerá alterações. Embora haja uma janela de 90 dias para adotar as alterações, a escolha de como e quando passar para a nova versão é sua.
+
+Cronograma de versões
+
+Quando uma nova versão da API de Marketing é lançada, mantemos a compatibilidade com a versão anterior por pelo menos 90 dias. Isso significa que você terá esse período de carência para atualizar sua versão. Durante esses 90 dias, você poderá fazer chamadas para a versão atual e a obsoleta. Depois desse prazo, será necessário atualizar para a nova versão. Ao término do período de carência, a versão obsoleta deixará de funcionar. Depois que uma versão ficar indisponível, as chamadas feitas para ela poderão falhar ou ser atualizadas para a próxima versão disponível.
+
+Por exemplo, a API de Marketing v17.0 foi lançada em 23 de maio de 2023, e a v16.0 expirou em 6 de fevereiro de 2024, fornecendo ao menos 90 dias para fazer a atualização para a nova versão.
+
+Veja um exemplo de cronograma. Talvez não lancemos uma nova versão no final do período de carência de 90 dias da versão anterior. No exemplo, a v16.0 fica obsoleta um pouco antes do lançamento da v18.0:
+
+No caso dos SDKs, uma versão está sempre disponível no estado atual como um pacote para download. Depois do fim de vida útil, o SDK continuará se baseando nas APIs de Marketing ou em métodos que não funcionam mais; por isso, presuma que ele não funcionará mais no fim de vida útil.
+
+
+
+Como fazer solicitações de controle de versões
+
+Todos os pontos de extremidade da API de Marketing estão disponíveis por meio de um caminho com controle de versões. Pré-anexe o identificador de versão no início do caminho da solicitação. Por exemplo:
+
+curl -G \-d "access_token=<ACCESS_TOKEN>" \"https://graph.facebook.com/v24.0/me/adaccounts"
+
+Isso funciona para todas as versões, neste formato geral:
+
+https://graph.facebook.com/v{n}/{request-path}
+
+Nele, n é a versão necessária. Confira a lista completa das versões disponíveis no Registro de alterações. Todas as referências da API de Marketing fornecem informações por versão.
+
+
+
+Migrações
+
+As migrações são somente para casos especiais, nos quais as alterações que precisam ser feitas não podem entrar no controle de versões. Normalmente, isso ocorrerá se o modelo de dados básicos tiver sido alterado. Migrações aplicam-se a todas as versões.
+
+As migrações que ainda estão em andamento aparecem listadas na nossa página de migrações. As migrações têm uma janela de pelo menos 90 dias, durante a qual você deverá migrar o app. Uma vez iniciada a janela, o comportamento pós-migração se tornará o padrão para os novos apps. Depois, quando a janela de migração tiver sido concluída, o comportamento pré-migração não estará mais disponível.
+
+Como gerenciar migrações por meio da Graph API
+
+As migrações podem ser gerenciadas por meio do campo de migrações do nó /app:
+
+É possível fazer uma chamada de atualização na borda para ativar e desativar migrações.
+
+Como gerenciar migrações por meio do Painel de Apps
+
+Você pode ativar e desativar as migrações disponíveis no Painel de Apps, em Configurações > Migrações. Vale ressaltar que a lista de migrações pode não ser a mesma da imagem abaixo, já que as migrações disponíveis são específicas para cada app, em momentos diferentes. Caso você veja uma migração Use Graph API v2.0 by default, ela será para Graph API somente, não para a API de Marketing.
+
+Ativação temporária de migrações no lado do cliente
+
+Em vez de ativar a migração pelo Painel de Apps ou pela API de Marketing, é possível adicionar uma sinalização especial definindo a migração para chamadas da API de Marketing. A sinalização é chamada de migrations_override e exige que você defina um blob JSON que descreva as migrações a serem ativadas ou desativadas. Por exemplo, se fosse fazer uma chamada bruta, você poderia passar:
+
+http://graph.facebook.com/path?
+
+  migrations_override={"migration1":true, "migration2":false}
+
+Com isso, é possível fazer chamadas à nova API de Marketing por meio de atualizações do cliente, em vez de fazer todos atualizarem para fazer chamadas a ela ao mesmo tempo. Isso também é útil para depuração.
+
+Você pode encontrar os nomes dessas migrações no nó /app mencionado acima.
+
+
+
+Atualização automática da versão
+
+Devido à rápida rotatividade das versões da API de Marketing, que mudam aproximadamente a cada quatro meses, estamos simplificando o processo de atualização. A partir de maio de 2024, habilitaremos o recurso de atualização automática da versão para os pontos de extremidade da API de Marketing que não são afetados entre as versões. Isso significa que, entre uma versão prestes a ficar obsoleta e a próxima disponível, se nenhum ponto de extremidade for afetado, a plataforma atualizará a chamada para a versão a ser lançada, em vez de gerar uma falha na solicitação diretamente. Essa mudança foi pensada para garantir uma experiência mais tranquila e eficiente com a API.
+
+Por exemplo, no dia 14 de maio de 2024, a v17.0 ficará obsoleta. De acordo com o registro de alterações da v18.0, os seguintes pontos de extremidade serão afetados:
+
+POST /act_{ad-account-id}/reachfrequencypredictions
+
+GET /act_{ad-account-id}/reachestimate
+
+GET /act_{ad-account-id}/delivery_estimate
+
+POST /act_{ad-account-id}/adsets
+
+POST /{adset-id}
+
+POST /act_{ad-account-id}/saved_audiences
+
+POST /{saved-audience-id}
+
+POST /act_{ad-account-id}/credit_cards
+
+Caso seu app faça uma chamada POST /{adset-id} com a v17.0 depois que ela ficar obsoleta no dia 14 de maio de 2024, essa solicitação da API falhará, já que a atualização automática não se aplica aos pontos de extremidade afetados pela próxima versão disponível (v18.0).
+
+Se o app fizer uma chamada GET /{ad-account-id}/insights com a v17.0 depois que ela ficar obsoleta, a plataforma atualizará sua solicitação para a próxima versão disponível (v18.0).
+
+Observação: caso seu app já esteja fazendo chamadas com versões posteriores à v17.0, nada mudará na data em que a versão ficar obsoleta.
+
+Para verificar os pontos de extremidade afetados em cada versão, consulte o registro de alterações da API de Marketing.
+
+
+
+API de Insights
+
+Fornece uma interface única e consistente para recuperar estatísticas de anúncios.
+
+Detalhamentos: resultados de grupo.
+
+Detalhamentos de ação: entender a resposta dos detalhamentos de ação.
+
+Trabalhos assíncronos: para solicitações com grandes resultados, use trabalhos assíncronos.
+
+Limites e melhores práticas: limites de chamada, filtragem e boas práticas.
+
+Para receber dados de desempenho, configure seus anúncios para rastrear as métricas que são importantes para você. Para isso, você pode usar as tags de URL, o Pixel da Meta e a API de Conversões.
+
+Antes de começar
+
+Você precisará do seguinte:
+
+A permissão ads_read.
+
+Um app. Consulte Desenvolvimento de apps da Meta para saber mais.
+
+
+
+Estatísticas de campanha
+
+Para consultar as estatísticas de desempenho dos últimos 7 dias de uma campanha:
+
+curl -G \
+
+  -d "date_preset=last_7d" \
+
+  -d "access_token=ACCESS_TOKEN" \
+
+  "https://graph.facebook.com/API_VERSION/AD_CAMPAIGN_ID/insights"
+
+Para saber mais, consulte a referência de Insights sobre Anúncios.
+
+
+
+Chamadas
+
+A API de Insights está disponível como uma borda em qualquer objeto de anúncios.
+
+Método de APIact_<AD_ACCOUNT_ID>/insights
+
+<CAMPAIGN_ID>/insights
+
+<ADSET_ID>/insights
+
+<AD_ID>/insights
+
+Solicitação
+
+Você pode solicitar campos específicos com uma lista separada por vírgulas nos parâmetros fields. Por exemplo:
+
+curl -G \-d "fields=impressions" \-d "access_token=ACCESS_TOKEN" \"https://graph.facebook.com/v24.0/<AD_ID>/insights"
+
+    
+
+Resposta
+
+{
+
+  "data": [
+
+    {
+
+      "impressions": "2466376",
+
+      "date_start": "2009-03-28",
+
+      "date_stop": "2016-04-01"
+
+    }
+
+  ],
+
+  "paging": {
+
+    "cursors": {
+
+      "before": "MAZDZD",
+
+      "after": "MAZDZD"
+
+    }
+
+  }}
+
+
+
+Níveis
+
+Agregue os resultados em um nível de objeto definido. Isso elimina a duplicação dos dados automaticamente.
+
+Solicitação
+
+Por exemplo, consulte os insights de uma campanha no nível do anúncio.
+
+curl -G \-d "level=ad" \-d "fields=impressions,ad_id" \-d "access_token=ACCESS_TOKEN" \"https://graph.facebook.com/v24.0/CAMPAIGN_ID/insights"
+
+Resposta
+
+{
+
+  "data": [
+
+    {
+
+      "impressions": "9708",
+
+      "ad_id": "6142546123068",
+
+      "date_start": "2009-03-28",
+
+      "date_stop": "2016-04-01"
+
+    },
+
+    {
+
+      "impressions": "18841",
+
+      "ad_id": "6142546117828",
+
+      "date_start": "2009-03-28",
+
+      "date_stop": "2016-04-01"
+
+    }
+
+  ],
+
+  "paging": {
+
+    "cursors": {
+
+      "before": "MAZDZD",
+
+      "after": "MQZDZD"
+
+    }
+
+  }}
+
+Se você não tiver acesso a todos os objetos do anúncio no nível solicitado, a chamada de insights não retornará dados. Por exemplo, ao solicitar insights com level definido como ad, se você não tiver acesso a um ou mais objetos desse tipo na conta de anúncios, a chamada de API retornará um erro de permissão.
+
+
+
+Janelas de atribuição
+
+A janela de atribuição de conversão oferece períodos de tempo que definem quando atribuímos o evento a um anúncio em um app da Meta. Para saber mais, consulte Sobre as janelas de atribuição no Gerenciador de Anúncios da Meta. Mensuramos as ações que ocorrem quando acontece um evento de conversão e voltamos 1 e 7 dias no tempo. Para visualizar as ações designadas a janelas de atribuição diferentes, faça uma solicitação para /{ad-account-id}/insights. Se você não fornecer action_attribution_windows, usaremos 7d_click e informaremos em value.
+
+Por exemplo, especifique action_attribution_windows, e "value" será fixado na janela de atribuição 7d_click. Faça uma solicitação para act_10151816772662695/insights?action_attribution_windows=['1d_click','1d_view'] e receba este resultado:
+
+"spend": 2352.45,"actions": [{"action_type": "link_click","value": 6608,"1d_view": 86,"1d_click": 6510},"cost_per_action_type": [{"action_type": "link_click","value": 0.35600030266344,"1d_view": 27.354069767442,"1d_click": 0.36135944700461},// if attribution window is _not_ specified in query. And note that the number under 'value' key is the same even if attribution window is specified.// act_10151816772662695/insights"spend": 2352.45,"actions": [{"action_type": "link_click","value": 6608},"cost_per_action_type": [{"action_type": "link_click","value": 0.35600030266344},
+
+
+
+Expansão de campo
+
+Solicite campos no nível do nó e por campos especificados na expansão de campo.
+
+Solicitação
+
+curl -G \-d "fields=insights{impressions}" \-d "access_token=ACCESS_TOKEN" \"https://graph.facebook.com/v24.0/AD_ID"
+
+Resposta
+
+{
+
+  "id": "6042542123268",
+
+  "name": "My Website Clicks Ad",
+
+  "insights": {
+
+    "data": [
+
+      {
+
+        "impressions": "9708",
+
+        "date_start": "2016-03-06",
+
+        "date_stop": "2016-04-01"
+
+      }
+
+    ],
+
+    "paging": {
+
+      "cursors": {
+
+        "before": "MAZDZD",
+
+        "after": "MAZDZD"
+
+      }
+
+    }
+
+  }}
+
+
+
+Classificação
+
+Classifique os resultados informando o parâmetro sort com {fieldname}_descending ou {fieldname}_ascending:
+
+Solicitação
+
+curl -G \-d "sort=reach_descending" \-d "level=ad" \-d "fields=reach" \-d "access_token=ACCESS_TOKEN" \"https://graph.facebook.com/v24.0/AD_SET_ID/insights"
+
+Resposta
+
+{
+
+  "data": [
+
+    {
+
+      "reach": 10742,
+
+      "date_start": "2009-03-28",
+
+      "date_stop": "2016-04-01"
+
+    },
+
+    {
+
+      "reach": 5630,
+
+      "date_start": "2009-03-28",
+
+      "date_stop": "2016-04-03"
+
+    },
+
+    {
+
+      "reach": 3231,
+
+      "date_start": "2009-03-28",
+
+      "date_stop": "2016-04-02"
+
+    },
+
+    {
+
+      "reach": 936,
+
+      "date_start": "2009-03-29",
+
+      "date_stop": "2016-04-02"
+
+    }
+
+  ],
+
+  "paging": {
+
+    "cursors": {
+
+      "before": "MAZDZD",
+
+      "after": "MQZDZD"
+
+    }
+
+  }}
+
+
+
+Rótulos de anúncios
+
+Estatísticas de todos os rótulos cujos nomes são idênticos. Agregados em um único valor em um nível de objeto de anúncio. Consulte a referência de rótulos de anúncios para saber mais.
+
+Solicitação
+
+curl -G \  -d "fields=id,name,insights{unique_clicks,cpm,total_actions}" \-d "level=ad" \-d 'filtering=[{"field":"ad.adlabels","operator":"ANY", "value":["Label Name"]}]'  \-d 'time_range={"since":"2015-03-01","until":"2015-03-31"}' \-d "access_token=ACCESS_TOKEN" \"https://graph.facebook.com/v24.0/AD_OBJECT_ID/insights"
+
+Resposta
+
+{
+
+  "data": [
+
+    {
+
+      "unique_clicks": 74,
+
+      "cpm": 0.81081081081081,
+
+      "total_actions": 49,
+
+      "date_start": "2015-03-01",
+
+      "date_stop": "2015-03-31",
+
+    },
+
+  ], 
+
+  "paging": {
+
+    "cursors": {
+
+      "before": "MA==",
+
+      "after": "MA==",
+
+    }
+
+  }}
+
+
+
+Definição de cliques
+
+Para entender melhor as métricas de cliques oferecidas pela Meta atualmente, leia as definições e o uso de cada uma abaixo:
+
+Cliques no link, actions:link_click – o número de cliques em links do anúncio para selecionar destinos ou experiências dentro ou fora de propriedades da Meta. Consulte Cliques no link na Central de Ajuda de Anúncios.
+
+
+
+Cliques (todos), clicks – a métrica contabiliza diversos tipos de cliques no anúncio, inclusive determinadas interações com o contêiner de anúncios, links para outros destinos e links para experiências de anúncios expandidas. Consulte Cliques (todos) na Central de Ajuda de Anúncios.
+
+
+
+Objetos excluídos e arquivados
+
+As unidades de anúncios podem ser DELETED ou ARCHIVED. As estatísticas de objetos excluídos ou arquivados aparecerão quando você consultar os respectivos objetos principais. Dessa forma, se você consultar impressions no nível do conjunto de anúncios, os resultados incluirão impressions de todos os anúncios do conjunto independentemente do estado de cada um deles (excluídos ou arquivados). Veja também Gerenciar o status de seu objeto de anúncio.
+
+Porém, se você consultar usando filtros, a filtragem de status será aplicada por padrão para retornar apenas objetos ativos. Por isso, as estatísticas totais do nó principal poderão ser maiores que as estatísticas dos derivados.
+
+No entanto, é possível obter as estatísticas de objetos ARCHIVED dos respectivos nós principais ao fornecer um parâmetro filtering adicional.
+
+Solicitação
+
+Para consultar as estatísticas de todos os anúncios ARCHIVED em uma conta de anúncios listadas uma a uma:
+
+curl -G \
+
+  -d "level=ad" \
+
+  -d "filtering=[{'field':'ad.effective_status','operator':'IN','value':['ARCHIVED']}]" \
+
+  -d "access_token=<ACCESS_TOKEN>" \
+
+  "https://graph.facebook.com/v24.0/act_<AD_ACCOUNT_ID>/insights/"
+
+Resposta
+
+Observe que apenas os objetos arquivados são retornados nessa resposta.
+
+{
+
+  "data": [
+
+    {
+
+      "impressions": "1741",
+
+      "date_start": "2016-03-11",
+
+      "date_stop": "2016-03-12"
+
+    }
+
+  ],
+
+  "paging": {
+
+    "cursors": {
+
+      "before": "MAZDZD",
+
+      "after": "MAZDZD"
+
+    }
+
+  }}
+
+Insights sobre objetos excluídos
+
+Você poderá consultar insights sobre objetos excluídos usando as respectivas identificações ou o filtro ad.effective_status.
+
+Solicitação
+
+Por exemplo, se você tiver a identificação do conjunto de anúncios:
+
+curl -G \-d "fields=id,name,status,insights{impressions}" \-d "access_token=ACCESS_TOKEN" \"https://graph.facebook.com/v24.0/AD_SET_ID"
+
+    
+
+Neste exemplo, consultamos com ad.effective_status:
+
+POST https://graph.facebook.com/<VERSION>/act_ID/insights?access_token=token&appsecret_proof=proof&fields=ad_id,impressions&date_preset=lifetime&level=ad&filtering=[{"field":"ad.effective_status","operator":"IN","value":["DELETED"]}]
+
+Resposta
+
+{
+
+  "id": "6042147342661",
+
+  "name": "My Like Campaign",
+
+  "status": "DELETED",
+
+  "insights": {
+
+    "data": [
+
+      {
+
+        "impressions": "1741",
+
+        "date_start": "2016-03-11",
+
+        "date_stop": "2016-03-12"
+
+      }
+
+    ],
+
+    "paging": {
+
+      "cursors": {
+
+        "before": "MAZDZD",
+
+        "after": "MAZDZD"
+
+      }
+
+    }
+
+  }}
+
+
+
+Solução de problemas
+
+Tempos-limite
+
+Os problemas mais comuns que causam falha nesse ponto de extremidade são o excesso de solicitações e a ocorrência de tempos-limite:
+
+Em solicitações /GET ou síncronas, é possível consultar erros de falta de memória ou de tempo-limite.
+
+Em solicitações /POST ou assíncronas, é possível consultar erros de tempo-limite. Para solicitações assíncronas, pode ser que demore até uma hora para concluir uma solicitação, incluindo tentativas de repetição. Por exemplo, se você fizer uma consulta que tentar extrair grandes volumes de dados para muitos objetos de nível de anúncio.
+
+Recomendações
+
+Não há um limite explícito que indique quando ocorrerá uma falha na consulta. Quando o tempo limite for atingido, tente detalhar a consulta em consultas menores colocando filtros, como intervalo de datas.
+
+O cálculo de métricas únicas é demorado. Tente consultar métricas exclusivas em uma chamada separada para melhorar o desempenho de métricas não exclusivas.
+
+
+
+Limites e boas práticas
+
+A partir de 10 de junho de 2025, reach não será mais retornado em consultas padrão com breakdowns e start_date de mais de 13 meses a fim de melhorar o desempenho geral da API. As respostas a essas solicitações omitirão reach e os campos relacionados (como frequency e cpp).
+
+Para aplicar breakdowns e recuperar valores de reach com mais de 13 meses, é possível usar trabalhos assíncronos e fazer até 10 solicitações diárias por conta de anúncios. Verifique o cabeçalho x-Fb-Ads-Insights-Reach-Throttle para monitorar o uso do limite de volume. Quando o limite for atingido, as solicitações omitirão reach e os campos relacionados.
+
+Se o limite para detalhamentos relacionados ao alcance for excedido, você verá esta mensagem de erro:
+
+ Reach-related metric breakdowns are unavailable due to rate limit threshold.
+
+A API de Insights fornece os dados de desempenho das campanhas de marketing do Facebook. Para proteger o desempenho e a estabilidade do sistema, temos medidas de proteção para que os recursos do sistema sejam distribuídos adequadamente entre os apps. Todas as políticas descritas abaixo estão sujeitas a alterações.
+
+Tempos limite
+
+O problema mais comum que causa falha nas chamadas à API de Insights sobre Anúncios é o excesso de solicitações e a ocorrência de tempos limite.
+
+Solicitações síncronas ou /GET podem retornar erros de falta de memória ou de tempo imite.
+
+Solicitações /POST ou assíncronas podem retornar erros de tempo limite. Para solicitações assíncronas, pode ser que demore até uma hora para concluir uma solicitação, incluindo tentativas de repetição. Por exemplo, se você fizer uma consulta que tentar extrair grandes volumes de dados para muitos objetos de nível de anúncio.
+
+Recomendações
+
+Não há um limite explícito que indique quando ocorrerá uma falha na consulta. Quando o tempo limite for atingido, tente detalhar a consulta em consultas menores colocando filtros, como intervalo de datas.
+
+O cálculo de métricas únicas é demorado. Tente consultar métricas exclusivas em uma chamada separada para melhorar o desempenho de métricas não exclusivas.
+
+
+
+Limites de dados por chamada
+
+Usamos limites de dados por chamada para impedir que uma consulta retorne dados demais, além do que o sistema é capaz de suportar. Há dois tipos de limites de dados:
+
+Pelo número de linhas na resposta, e
+
+Pelo número de pontos de dados necessários para computar o total, como a linha de resumo.
+
+Esses limites se aplicam tanto às chamadas /insights síncronas quanto às assíncronas, e retornamos um erro:
+
+error_code = 100,  CodeException (error subcode: 1487534)
+
+Boas práticas, limites de dados por chamada
+
+Limite sua consulta restringindo o intervalo de datas ou o número de identificação de anúncios. Você pode também limitar sua consulta às métricas necessárias, ou dividi-la em diversas consultas, cada uma solicitando um subconjunto de métricas.
+
+Evite consultas no nível da conta que contenham detalhamento de alta cardinalidade, como action_target_id ou product_id, e intervalos de datas mais amplos, como o vitalício.
+
+Use a borda /insights diretamente com objetos de anúncio de nível mais baixo para consultar dados detalhados sobre esse nível. Por exemplo, use primeiro a consulta no nível da conta para consultar a lista de números de identificação de objetos de nível mais baixo com os parâmetros level ou filtering. Neste exemplo, buscamos todas as campanhas que registraram algumas impressões:
+
+curl -G \-d 'access_token=<ACCESS_TOKEN>' \-d 'level=campaign' \-d 'filtering=[{field:"ad.impressions",operator:"GREATER_THAN",value:0}]' \'https://graph.facebook.com/v2.7/act_<ACCOUNT_ID>/insights'
+
+Assim, podemos usar /<campaign_id>/insights com cada valor retornado para fazer consultas e solicitar insights em lote para essas campanhas em uma única chamada:
+
+curl \-F 'access_token=<ACCESS_TOKEN>' \-F 'batch=[ \
+
+  { \
+
+    "method": "GET", \
+
+    "relative_url": "v24.0/<CAMPAIGN_ID_1>/insights?fields=impressions,spend,ad_id,adset_id&level=ad" \
+
+  }, \
+
+  { \
+
+    "method": "GET", \
+
+    "relative_url": "v24.0/<CAMPAIGN_ID_2>/insights?fields=impressions,spend,ad_id,adset_id&level=ad" \
+
+  }, \
+
+  { \
+
+    "method": "GET", \
+
+    "relative_url": "v24.0/<CAMPAIGN_ID_3>/insights?fields=impressions,spend,ad_id,adset_id&level=ad" \
+
+  } \
+
+]' \'https://graph.facebook.com'
+
+Use o parâmetro filtering apenas para consultar insights de objetos de anúncios com dados. O valor do campo especificado em filtering usa notação de PONTO para representar os campos sob o objeto. Observe que a filtragem com STARTS_WITH e CONTAIN não altera os dados do resumo. Nesse caso, use o operador IN. Veja o exemplo de uma solicitação filtering:
+
+curl -G \-d 'access_token=<ACCESS_TOKEN>' \-d 'level=ad' \-d 'filtering=[{field:"ad.impressions",operator:"GREATER_THAN",value:0},]' \'https://graph.facebook.com/v24.0/act_<ACCOUNT_ID>/insights'
+
+Use date_preset, se possível. Os intervalos de datas personalizados são de veiculação menos eficiente no nosso sistema.
+
+Use solicitações em lote para múltiplas chamadas síncronas e assíncronas ao consultar grandes volumes de dados e evitar tempo limite.
+
+Primeiro, experimente as chamadas síncronas e depois use as chamadas assíncronas nos casos em que as chamadas síncronas atingirem o tempo limite.
+
+As informações são atualizadas a cada 15 minutos e não se alteram depois de 28 dias do seu registro.
+
+
+
+Limites de carregamento de chamadas de informações
+
+Após 90 dias do lançamento da v3.3 e em vigor para todas as versões públicas, mudamos o limite de classificação no nível da conta de anúncios para refletir melhor o volume de chamadas de API necessárias. Calculamos a cota de limite de volume no seu nível de acesso à API de Marketing e na empresa proprietária do app. Consulte Acesso e autenticação. Essa alteração se aplica a todos os pontos de extremidade da API de Insights sobre Anúncios: GET {adaccount_ID}/insights, GET {campaign_ID}/insights, GET {adset_ID}/insights, GET {ad_ID}/insights, POST {adaccount_ID}/insights, POST {campaign_ID}/insights, POST {adset_ID}/insights, POST {ad_ID}/insights.
+
+Usamos os limites de carregamento para permitir uma experiência otimizada de relatórios. Medimos as chamadas de API de acordo com o volume, assim como os recursos exigidos. Permitimos um limite de carga fixo por app, por segundo. Se o limite for excedido, haverá uma falha nas solicitações.
+
+Verifique o cabeçalho HTTP x-fb-ads-insights-throttle retornado com cada resposta da API para saber se o app está próximo do limite e ver uma estimativa do peso que uma determinada consulta pode ter. As chamadas de insights também estão sujeitas aos limites da conta de anúncios padrão mostrados no cabeçalho HTTP x-ad-account-usage. Veja mais informações em Boas práticas.
+
+Quando um app atinge o limite, a chamada recebe uma resposta de erro com error_code = 4, CodedException. Você deve se manter abaixo do limite. Caso um app atinja os limites permitidos, somente uma certa porcentagem das solicitações passará, dependendo da consulta e do volume.
+
+Aplicamos a limitação de volume a cada app que envia chamadas /insights síncronas e assíncronas combinadas. Os dois principais parâmetros com relação aos quais os limites são contados são por app e por conta de anúncios.
+
+Veja a seguir um exemplo do cabeçalho HTTP informando a pontuação acumulada de um app em porcentagem dos limites:
+
+X-FB-Ads-Insights-Throttle: { "app_id_util_pct": 100, "acc_id_util_pct": 10, "ads_api_access_tier": "standard_access" }
+
+O cabeçalho "x-fb-ads-insights-throttle" é um valor em JSON contendo estas informações:
+
+app_id_util_pct: a porcentagem da capacidade alocada que o app_id associado consumiu.
+
+acc_id_util_pct: a porcentagem da capacidade alocada que o account_id de anúncios associado consumiu.
+
+ads_api_access_tier: os níveis permitem que o app acesse a API de Marketing. standard_access habilita uma limitação de volume menor.
+
+Limites de volume globais
+
+Em períodos com elevada carga global no ponto de extremidade /insights, o sistema poderá restringir as solicitações para proteger o back-end. Isso ocorre quando recebemos de forma simultânea um número elevado de consultas com alta complexidade (intervalos de tempo longos, métricas complexas e/ou grande número de IDs de objeto de anúncio). Isso causará um erro semelhante a este:
+
+error_code = 4,  CodeException (error subcode: 1504022), error_title: Too many API requests
+
+Nesses períodos, recomendamos reduzir as chamadas, esperar alguns minutos e consultar de novo.
+
+Boas práticas de limites de volume
+
+O envio de várias consultas de uma só vez apresenta maior probabilidade de acionar nossa limitação de volume. Procure distribuir suas consultas /insights regulando-as com tempos de espera no seu trabalho.
+
+Use as informações de volume do cabeçalho de resposta HTTP para moderar suas chamadas. Adicione um mecanismo de recuo para reduzir ou pausar suas consultas /insights se chegar próximo dos 100% no app ou na conta de anúncios específica.
+
+Reportamos os dados de insights sobre anúncios no fuso horário da conta de anúncios. Para consultar diariamente os dados de informações da conta de anúncios associada, considere o horário do dia empregando o fuso horário da conta. Isso ajuda na regularidade das consultas durante o dia.
+
+Verifique o ads_api_access_tier que permite o acesso à API de Marketing. Por padrão, os apps têm o nível development_access, e standard_access habilita uma limitação de volume menor. Para aumentar o limite de volume e chegar ao nível padrão, você pode solicitar "acesso avançado" ao recurso Acesso Padrão ao Gerenciamento de Anúncios.
+
+
+
+Trabalhos assíncronos da API de Insights
+
+Buscar estatísticas em vários objetos e aplicar filtros e classificação; agora, o fluxo de trabalho foi simplificado:
+
+1. Envie uma solicitação POST ao ponto de extremidade <AD_OBJECT>/insights, que retorna um id de uma geração de relatórios de anúncio.
+
+
+
+{
+
+  "report_run_id": 6023920149050,}
+
+Não armazene o report_run_id para uso prolongado, já que ele expira após 30 dias.
+
+2. As gerações de relatórios de anúncio contêm informações sobre trabalhos assíncronos, como async_status. Faça uma pesquisa neste campo até async_status ser Job Completed e async_percent_completion ser 100.
+
+
+
+{
+
+  "id": "6044775548468",
+
+  "account_id": "1010035716096012",
+
+  "time_ref": 1459788928,
+
+  "time_completed": 1459788990,
+
+  "async_status": "Job Completed",
+
+  "async_percent_completion": 100}
+
+Observação: a partir da versão 25.0 da API de Marketing, se o relatório falhar, você verá os campos correspondentes error_code, error_message, error_subcode, error_user_title, e error_user_msg retornados por padrão. Para saber mais sobre os códigos de erro retornados, consulte Códigos de erro dos insights sobre anúncios.
+
+3. Depois, consulte a borda <AD_REPORT_RUN_ID>/insights para buscar o resultado final.
+
+
+
+{
+
+  "data": [
+
+    {
+
+      "impressions": "9708",
+
+      "date_start": "2009-03-28",
+
+      "date_stop": "2016-04-04"
+
+    },
+
+    {
+
+      "impressions": "18841",
+
+      "date_start": "2009-03-28",
+
+      "date_stop": "2016-04-04"
+
+    }
+
+  ],
+
+  "paging": {
+
+    "cursors": {
+
+      "before": "MAZDZD",
+
+      "after": "MQZDZD"
+
+    }
+
+  }}
+
+Este trabalho consulta todas as estatísticas das contas e retorna um ID de trabalho assíncrono:
+
+curl \
+
+  -F 'level=campaign' \
+
+  -F 'access_token=<ACCESS_TOKEN>' \
+
+  https://graph.facebook.com/v24.0/<CAMPAIGN_ID>/insights
+
+curl -G \
+
+  -d 'access_token=<ACCESS_TOKEN>' \
+
+  https://graph.facebook.com/v24.0/1000002
+
+curl -G \
+
+  -d 'access_token=<ACCESS_TOKEN>' \
+
+  https://graph.facebook.com/v24.0/1000003/insights
+
+Status de trabalho assíncrono
+
+StatusDescriçãoJob Not Started
+
+O trabalho ainda não foi iniciado.
+
+Job Started
+
+O trabalho foi iniciado, mas ainda não está em veiculação.
+
+Job Running
+
+O trabalho começou a ser veiculado.
+
+Job Completed
+
+O trabalho foi concluído com sucesso.
+
+Job Failed
+
+O trabalho falhou. Revise sua consulta e tente novamente.
+
+Job Skipped
+
+O trabalho expirou e foi ignorado. Reenvie seu trabalho e tente novamente.
+
+
+
+Exportar relatórios
+
+Fornecemos um ponto de extremidade para você exportar <AD_REPORT_RUN_ID> em um formato localizado legível.
+
+Observação: esse ponto de extremidade não faz parte da Graph API com controle de versão e não está em conformidade com a política de alterações disruptivas. Scripts e programas não devem depender do formato do resultado, visto que ele pode mudar inesperadamente.
+
+  curl -G \
+
+  -d 'report_run_id=<AD_REPORT_RUN_ID>' \
+
+  -d 'name=myreport' \
+
+  -d 'format=xls' \'https://www.facebook.com/ads/ads_insights/export_report/'
+
+  
+
+NomeDescriçãoname
+
+string
+
+Nome do arquivo baixado
+
+format
+
+enum{csv,xls}
+
+Formato do arquivo
+
+report_run_id
+
+integer
+
+ID do relatório a ser executado
+
+access_token
+
+string
+
+Permissões concedidas pelo usuário conectado. Forneça essa informação para exportar relatórios para outro usuário.
+
+
+
+Detalhamentos da API de Insights
+
+Agrupe os resultados da API de Insights em conjuntos diferentes usando detalhamentos.
+
+A API de Insights pode retornar diversas métricas estimadas, em desenvolvimento ou ambas. Os valores do detalhamento de insights são estimados. Para obter mais informações, consulte API de Insights, Métricas obsoletas e estimadas.
+
+Limitações
+
+Campos indisponíveis
+
+Os campos a seguir não podem ser solicitados na especificação de um detalhamento:
+
+app_store_clicks
+
+newsfeed_avg_position
+
+newsfeed_clicks
+
+relevance_score
+
+newsfeed_impressions
+
+Restrições para métricas de ação fora da Meta
+
+Os detalhamentos a seguir não estarão mais disponíveis para métricas de ação fora da Meta.
+
+Tipo 1
+
+region
+
+dma
+
+hourly_stats_aggregated_by_audience_time_zone
+
+hourly_stats_aggregated_by_advertiser_time_zone
+
+Tipo 2
+
+action_device
+
+action_destination
+
+action_target_id
+
+product_id
+
+action_carousel_card_id/action_carousel_card_name
+
+action_canvas_component_name
+
+Regras relacionadas a consultas que contêm os detalhamentos acima:
+
+Tipo 1: a API de Insights não retornará métricas fora do site incompatíveis (por exemplo, métricas de ação com detalhamentos do Tipo 1).
+
+Tipo 2: as métricas da web fora do site continuarão a ser retornadas a partir da API, mas não conterão o valor de detalhamento. As métricas para dispositivos móveis não serão mais retornadas quando forem consultadas com os detalhamentos mencionados.
+
+Observação: os detalhamentos listados acima ainda são compatíveis com métricas na Meta, como impressões, cliques no link, entre outras. As alterações não afetarão dados históricos anteriores a 27 de abril de 2021. Os detalhamentos desse tipo de dados continuarão disponíveis.
+
+Métricas de ação
+
+As métricas não estarão disponíveis nas seguintes situações:
+
+Quando houver uma tentativa de agregação em diversas configurações de atribuição.
+
+Quando a solicitação incluir detalhamentos afetados. Essa restrição se aplica somente a tipos de ação e fora da Meta.
+
+Observação: as métricas estarão disponíveis se a consulta for feita com action_attribution_windows=1d_click,7d_click,1d_view,incrementality (sem incluir a janela-padrão).
+
+
+
+Detalhamentos genéricos
+
+Os seguintes detalhamentos estão disponíveis:
+
+DetalhamentoDescriçãoaction_device
+
+O dispositivo no qual o evento de conversão que você está rastreando ocorreu. Por exemplo, \"Desktop\" se a conversão tiver sido feita em um desktop.
+
+action_canvas_component_name
+
+O nome de um componente em um anúncio do Canvas.
+
+action_carousel_card_id
+
+O ID do cartão do carrossel específico com o qual as pessoas se engajaram quando viram seu anúncio.
+
+action_carousel_card_name
+
+O cartão do carrossel específico com o qual as pessoas se engajaram quando viram seu anúncio. Os cartões são identificados pelos respectivos cabeçalhos.
+
+action_destination
+
+O destino das pessoas após clicarem no seu anúncio. Pode ser sua Página do Facebook, uma URL externa para seu pixel de conversão ou um app configurado com o kit de desenvolvimento de software (SDK, pelas iniciais em inglês).
+
+action_reaction
+
+O número de reações aos seus anúncios ou posts turbinados. O botão de reações em um anúncio permite que as pessoas reajam ao conteúdo com uma das seguintes opções: Curtida, Amei, Haha, Uau, Triste ou Grr.
+
+action_target_id
+
+O ID do destino das pessoas após clicarem no seu anúncio. Pode ser a sua Página do Facebook, uma URL externa para o seu pixel de conversão ou um app configurado com o kit de desenvolvimento de software (SDK, pelas iniciais em inglês).
+
+action_type
+
+O tipo de ação realizada quanto ao anúncio, à Página, ao app ou ao evento depois que o anúncio foi exibido a alguém, mesmo que essa pessoa não tenha clicado nele. Os tipos de ação incluem curtidas na Página, instalações do app, conversões, participações no evento e muito mais.
+
+action_video_sound
+
+O status do som (ligado/desligado) quando alguém reproduzir seu anúncio de vídeo.
+
+action_video_type
+
+Detalhamento das métricas de vídeo.
+
+ad_format_asset
+
+O número de identificação do ativo de formato do anúncio envolvido na impressão, no clique ou na ação
+
+age
+
+A faixa etária das pessoas que você alcançou.
+
+app_id
+
+O ID do app associado à campanha ou à conta de anúncios solicitada. As informações do app (incluindo o ID) podem ser visualizadas no Painel de Apps.
+
+
+
+Esse detalhamento só é compatível com o campo total_postbacks.
+
+body_asset
+
+O ID do ativo de corpo envolvido na impressão, no clique ou na ação.
+
+call_to_action_asset
+
+O ID do ativo de chamada para ação envolvido na impressão, no clique ou na ação.
+
+country
+
+O país onde estão as pessoas que você alcançou. Isso se baseia em informações como cidade natal, cidade atual e localização geográfica de onde a pessoa geralmente visita a Meta.
+
+description_asset
+
+O ID do ativo de descrição envolvido na impressão, no clique ou na ação.
+
+device_platform
+
+O tipo de dispositivo, seja móvel ou desktop, usado pelas pessoas ao visualizar ou clicar em um anúncio, conforme exibido nos relatórios de anúncios.
+
+dma
+
+Regiões Designated Marketing Area (DMA) são as 210 áreas geográficas dos Estados Unidos em que a exibição da televisão local é mensurada pela The Nielsen Company.
+
+frequency_value
+
+O número de vezes que um anúncio da sua campanha de alcance e frequência foi exibido a cada conta da Central de Contas.
+
+gender
+
+O gênero das pessoas que você alcançou. As pessoas que não informarem um gênero serão exibidas na categoria "não especificado".
+
+hourly_stats_aggregated_by_advertiser_time_zone
+
+O detalhamento por hora agregado pelo horário em que os anúncios foram veiculados no fuso horário do anunciante. Por exemplo, se estiverem programados para veiculação das 9h às 11h, mas alcançarem públicos em diversos fusos horários, os anúncios poderão ser veiculados das 9h às 13h no fuso horário do anunciante. As estatísticas serão reunidas em quatro grupos: das 9h às 10h, das 10h às 11h, das 11h às 12h e das 12h às 13h.
+
+hourly_stats_aggregated_by_audience_time_zone
+
+O detalhamento por hora agregado pelo horário em que os anúncios foram veiculados no fuso horário dos públicos. Por exemplo, se estiverem programados para veiculação das 9h às 11h, mas alcançarem públicos em diversos fusos horários, os anúncios poderão ser veiculados das 9h às 13h no fuso horário do anunciante. As estatísticas serão reunidas em dois grupos: das 9h às 10h e das 10h às 11h.
+
+image_asset
+
+O ID do ativo de imagem envolvido na impressão, no clique ou na ação.
+
+impression_device
+
+O dispositivo no qual seu último anúncio foi exibido a alguém na Meta. Por exemplo, \"iPhone\" se alguém tiver visto o anúncio em um iPhone.
+
+is_conversion_id_modeled
+
+Uma sinalização em booliano que indica se os conversion_bits são modelados. 0 indica que conversion_bits não são modelados, e 1 indica que conversion_bits são modelados.
+
+
+
+Esse detalhamento só é compatível com o campo total_postbacks_detailed.
+
+link_url_asset
+
+O ID do ativo de URL envolvido na impressão, no clique ou na ação.
+
+place_page_id
+
+A identificação da página do local envolvida na impressão ou clique.
+
+
+
+Os insights no nível da conta e a page_place_id não são compatíveis entre si. Por isso, não podem ser consultados juntos.
+
+platform_position
+
+A posição na qual seu anúncio foi exibido em uma plataforma, por exemplo, no Feed do desktop no Facebook ou no Feed do celular no Instagram.
+
+product_id
+
+O ID do produto envolvido na impressão, no clique ou na ação.
+
+publisher_platform
+
+A plataforma na qual seu anúncio foi exibido, por exemplo, Facebook, Instagram ou Audience Network.
+
+region
+
+As regiões onde estão as pessoas que você alcançou. Isso se baseia em informações como cidade natal, cidade atual e localização geográfica de onde a pessoa geralmente visita o Facebook.
+
+skan_campaign_id
+
+A identificação da campanha bruta recebida como parte do postback da Skan no iOS 15 ou em versões posteriores.
+
+
+
+Observação: esse detalhamento só é compatível com o campo total_postbacks_detailed.
+
+skan_conversion_id
+
+O número de identificação de conversão atribuído (também chamado de identificação de prioridade) do evento e/ou do pacote de eventos configurado no esquema de configuração da SKAdNetwork do aplicativo. É possível visualizar e ajustar a configuração de eventos do app no Gerenciador de Eventos da Meta. Saiba mais sobre como configurar os eventos do app para a SKAdNetwork da Apple aqui.
+
+
+
+Observação: esse detalhamento só é compatível com o campo total_postbacks.
+
+title_asset
+
+O ID do ativo de título envolvido na impressão, no clique ou na ação.
+
+user_segment_key
+
+Segmentação do usuário (por exemplo, novo ou existente) de Campanhas de Compras Advantage+. O usuário existente é especificado pelo público personalizado nas configurações das campanhas.
+
+video_asset
+
+O ID do ativo de vídeo envolvido na impressão, no clique ou na ação.
+
+Observações
+
+No momento, não há compatibilidade com a filtragem de app_id e skan_conversion_id usando o campo filtering.
+
+O detalhamento dma não está disponível para as métricas estimated_ad_recall_rate e video_thruplay_watched_actions.
+
+O detalhamento dma aplica uma metodologia de amostragem para computar métricas únicas como alcance. Quando houver um grande número de regiões DMA com volumes baixos, talvez elas não sejam representadas na amostra ou dimensionadas em potência de 2. Por isso, recomendamos consultar as impressões correspondentes para melhorar a precisão.
+
+frequency_value é usado somente com reach. Por exemplo, com que frequência determinado usuário visualizou um anúncio.
+
+Os detalhamentos image_asset e video_asset não estão disponíveis no nível da conta de anúncios para ativos usados no criativo dinâmico.
+
+As ações de anúnciovideo_p25_watched_actions, video_p50_watched_actions, video_p75_watched_actions, video_p95_watched_actions e video_p100_watched_actions não são compatíveis com o detalhamento region.
+
+Os detalhamentos de ativos de criativo dinâmico aceitam somente um conjunto limitado de métricas:
+
+Detalhamentos de criativo dinâmicoMétricas compatíveis com os detalhamentos de criativo dinâmicoad_format_asset
+
+body_asset
+
+call_to_action_asset
+
+description_asset
+
+image_asset
+
+link_url_asset
+
+title_asset
+
+video_asset
+
+impressions
+
+clicks
+
+spend
+
+reach
+
+actions
+
+action_values
+
+A chamada a seguir agrupa os resultados por age e gender.
+
+cURL
+
+curl -G \
+
+  -d "breakdowns=age,gender" \
+
+  -d "fields=impressions" \
+
+  -d "access_token=<ACCESS_TOKEN>" \
+
+  "https://graph.facebook.com/<API_VERSION>/<AD_CAMPAIGN_ID>/insights"
+
+Mostrar resposta
+
+
+
+Detalhamento por hora
+
+As estatísticas por hora agora são um detalhamento disponível usando o seguinte detalhamento:
+
+hourly_stats_aggregated_by_advertiser_time_zone
+
+hourly_stats_aggregated_by_audience_time_zone
+
+Consulte Como combinar detalhamentos para ver os limites de solicitações com o detalhamento por hora. O detalhamento por hora não é compatível com campos únicos, isto é, que têm os prefixos unique_*, reach ou frequency. Os campos reach e frequency retornarão 0 quando os detalhamentos por hora forem usados.
+
+cURL
+
+curl -G \-d "fields=impressions" \-d "breakdowns=hourly_stats_aggregated_by_audience_time_zone" \-d "access_token=<ACCESS_TOKEN>" \"https://graph.facebook.com/<API_VERSION>/<AD_CAMPAIGN_ID>/insights"
+
+Mostrar resposta
+
+
+
+Detalhamento por ação
+
+Agrupe resultados no campo actions. Os detalhamentos a seguir podem ser usados com action_breakdowns:
+
+Os detalhamentos a seguir podem ser fornecidos no campo action_breakdowns.
+
+action_device
+
+conversion_destination
+
+matched_persona_id
+
+matched_persona_name
+
+signal_source_bucket
+
+standard_event_content_type
+
+action_canvas_component_name
+
+action_carousel_card_id
+
+action_carousel_card_name
+
+action_destination
+
+action_reaction
+
+action_target_id
+
+action_type
+
+action_video_sound
+
+action_video_type
+
+is_business_ai_assisted
+
+Se o parâmetro action_breakdowns não for especificado, action_type será adicionado de forma implícita como action_breakdowns.
+
+
+
+Contagem total em actions
+
+A contagem total (soma) de todos os valores retornados nos resultados do grupo (actions).
+
+O resultado pode não ser igual a total_actions, pois os campos retornados em actions são hierárquicos e incluem ações detalhadas que não foram contabilizadas.
+
+total_actions - 33
+
+    page_engagement - 10
+
+        post_engagement - 10
+
+            link_click - 2
+
+            comment - 3
+
+            post_reaction - 3
+
+            like - 2
+
+    mobile_app_install - 12
+
+    app_custom_event - 11
+
+        app_custom_event.fb_mobile_activate_app - 6
+
+        app_custom_event.other - 5
+
+Neste exemplo, post_engagement é a soma de link_click, comment, like e post_reaction, sendo post_reaction a contagem de todas as reações, inclusive curtidas. O campo total_actions representa a soma de ações de nível superior para um objeto, como page_engagement, mobile_app_install e app_custom_event.
+
+
+
+Como combinar detalhamentos
+
+Devido a restrições de armazenamento, apenas algumas alterações de detalhamento estão disponíveis. As alterações marcadas com um asterisco (*) poderão ser agrupadas com action_type, action_target_id e action_destination, que é o nome de action_target_id.
+
+Alteraçãoaction_converted_product_id – disponibilidade limitada para Anúncios Colaborativos.
+
+action_type *
+
+action_type, action_converted_product_id – disponibilidade limitada para Anúncios Colaborativos.
+
+action_target_id *
+
+action_device *
+
+action_device, impression_device *
+
+action_device, publisher_platform *
+
+action_device, publisher_platform, impression_device *
+
+action_device, publisher_platform, platform_position *
+
+action_device, publisher_platform, platform_position, impression_device *
+
+action_reaction
+
+action_type, action_reaction
+
+age *
+
+gender *
+
+age, gender *
+
+app_id, skan_conversion_id
+
+country *
+
+region *
+
+publisher_platform *
+
+publisher_platform, impression_device *
+
+publisher_platform, platform_position *
+
+publisher_platform, platform_position, impression_device *
+
+product_id *
+
+hourly_stats_aggregated_by_advertiser_time_zone *
+
+hourly_stats_aggregated_by_audience_time_zone *
+
+action_carousel_card_id / action_carousel_card_name
+
+action_carousel_card_id / action_carousel_card_name
+
+action_carousel_card_id / action_carousel_card_name, impression_device
+
+action_carousel_card_id / action_carousel_card_name, country
+
+action_carousel_card_id / action_carousel_card_name, age
+
+action_carousel_card_id / action_carousel_card_name, gender
+
+action_carousel_card_id / action_carousel_card_name, age, gender
+
+Limitações
+
+Os campos video_* não podem ser solicitados com detalhamentos de estatísticas por hora.
+
+O campo video_avg_time_watched_actions não pode ser solicitado com o detalhamento por região.
+
+action_type será adicionado de forma implícita como action_breakdowns quando o parâmetro action_breakdowns não for especificado.
+
+
+
+Especificações de rastreamento e de conversão
+
+Tracking Specs são usadas principalmente para monitoramento e relatórios. Essas especificações definem que ações do usuário que vê ou clica em um anúncio podem ser monitoradas e ajudam os anunciantes a entender como os usuários interagem com o conteúdo do anúncio e verificar se estão sendo geradas conversões fora do site, instalações de app ou outras ações importantes. As especificações de rastreamento não influenciam diretamente a otimização da veiculação do anúncio, mas são essenciais para coletar dados sobre a interação dos usuários.
+
+Conversion specs são usadas para definir as condições para considerar uma conversão (uma ação do usuário desejada) como relacionada ao anúncio. Essas especificações são fundamentais para atribuir conversões a anúncios específicos e para otimizar o desempenho dos anúncios e são usadas no processo de otimização da veiculação de um anúncio, em que o sistema prevê e aumenta as taxas de conversão. As Conversion_specs são somente leitura desde a versão 2.4. O valor é extraído de optimization_goal do conjunto de anúncios.
+
+Definir especificações de rastreamento
+
+Use com qualquer combinação de tipo de lance e criativo. Para determinar especificações de rastreamento, você precisa de um campo adicional no anúncio com o nome de tracking_specs. O campo tracking_specs usa argumentos idênticos à especificação de ação. Para criar um anúncio, consulte Criação de anúncio.
+
+
+
+Especificações de rastreamento padrão
+
+Há um conjunto de especificações de rastreamento padrão para determinadas combinações de objetivo, bid_type e criativo. Ao adicionar novas especificações de rastreamento, as especificações padrão continuarão disponíveis e não serão substituídas. No entanto, para os objetivos APP_INSTALLS e OUTCOME_ENGAGEMENT, as especificações de rastreamento padrão serão substituídas. Para usar o padrão, você precisa adicioná-los às especificações personalizadas.
+
+Você pode usar notações de string ou matriz na especificação, como 'APPLICATION_ID' ou ['APPLICATION_ID'].
+
+CPM se refere a billing_event=IMPRESSIONS e optimization_goal=IMPRESSIONS
+
+CPC se refere a billing_event=CLICKS e optimization_goal=CLICKS
+
+oCPM se refere a billing_event=IMPRESSIONS e optimization_goal definidos como uma ação
+
+CPA se refere a billing_event e optimization_goal definidos como uma ação
+
+ObjetivoCriativo e tipo de lanceEspecificação de rastreamentoDescriçãoCANVAS_APP_
+
+ENGAGEMENT
+
+Anúncios de engajamento do app Canvas com optimization_goal= APP_INSTALLS
+
+[{'action.type':
+
+'app_engagement',
+
+'application':
+
+'APPLICATION_ID'}, {'action.type':
+
+'post_engagement',
+
+'post':'POST_ID', 'page':'PAGE_ID'}]
+
+Consulte as metaespecificações app_engagement e post_engagement.
+
+CANVAS_APP_
+
+INSTALLS
+
+Anúncios de instalação do app Canvas em que a otimização não foi definida como optimization_goal= APP_INSTALLS
+
+[{'action.type':
+
+'app_engagement',
+
+'application':
+
+'APPLICATION_ID'}, {'action.type':
+
+'post_engagement',
+
+'post':'POST_ID', 'page':'PAGE_ID'}]
+
+Consulte as metaespecificações app_engagement e post_engagement.
+
+CONVERSIONS
+
+Anúncios com link ou com foto em post da Página que contam com promoted_object definido como uma identificação do pixel e com optimization_goal= OFFSITE_CONVERSIONS
+
+{'action.type':
+
+'post_engagement',
+
+'post':'POST_ID', 'page':'PAGE_ID'},
+
+{'action.type':'like',
+
+'page':PAGE_ID}
+
+Especificações de curtida e de engajamento com o post da Página. Refere-se ao número de cliques no link em um post específico da Página se houver somente um link, à quantidade de engajamentos com o post e ao número de stories gerados ou de engajamentos de usuários com uma página.
+
+CONVERSIONS
+
+Anúncios com link ou com foto em post da Página em que a otimização não foi definida como optimization_goal= OFFSITE_CONVERSIONS
+
+{'action.type':
+
+'offsite_conversion',
+
+'fb_pixel':
+
+'FACEBOOK_PIXEL_ID'}, {'action.type':{'action.type':
+
+'post_engagement',
+
+'post':'POST_ID', 'page':'PAGE_ID'},
+
+{'action.type':'like',
+
+'page':PAGE_ID}
+
+Especificações de conversão, de curtida e de engajamento com o post da Página. Refere-se ao número de cliques no link em um post específico da Página se houver somente um link, à quantidade de engajamentos com o post e ao número de stories gerados ou de engajamentos de usuários com uma página.
+
+CONVERSIONS
+
+Anúncios de domínio que contam com promoted_object definido como uma identificação do pixel e com optimization_goal= OFFSITE_CONVERSIONS
+
+{'action.type':
+
+'link_click',
+
+'object':'PAGE_ID'}, {'action.type':'like',
+
+'page':PAGE_ID}
+
+Especificações de curtidas na Página e de cliques no link. Refere-se ao número de cliques no link em um post específico da Página, se houver somente um link, à quantidade de engajamentos no post e ao número de stories gerados ou de engajamentos de usuários com uma Página.
+
+CONVERSIONS
+
+Anúncios de domínio em que a otimização não foi definida como optimization_goal= OFFSITE_CONVERSIONS
+
+{'action.type':
+
+'offsite_conversion',
+
+'fb_pixel':
+
+'FACEBOOK_PIXEL_ID'}, {'action.type':
+
+'link_click',
+
+'object':'PAGE_ID'}, {'action.type':'like',
+
+'page':PAGE_ID}
+
+Especificações de conversão, de curtidas na Página e de cliques no link. Refere-se ao número de cliques no link em um post específico da Página, se houver somente um link, à quantidade de engajamentos no post e ao número de stories gerados ou de engajamentos de usuários com uma Página.
+
+EVENT_RESPONSES
+
+Anúncios de evento em que a otimização não foi definida como optimization_goal= EVENT_RESPONSES
+
+[{'action.type':'rsvp' ,
+
+'response':'yes', 'event':'EVENT_ID'},
+
+{'action.type':'rsvp' ,
+
+'response':'maybe', 'event':'EVENT_ID'},
+
+[{'action.type':'rsvp' ,
+
+'response':'no', 'event':'EVENT_ID'}]
+
+O número de respostas aos convites de um evento (sim, talvez ou não).
+
+EVENT_RESPONSES
+
+Anúncios de evento com optimization_goal= EVENT_RESPONSES
+
+Campo vazio (a especificação de conversão incluirá as ações rastreadas)
+
+O número de respostas aos convites de um evento (sim, talvez ou não).
+
+LINK_CLICKS
+
+Anúncios com link ou com foto em post da Página com qualquer opção de lance
+
+{'action.type':
+
+'post_engagement',
+
+'post':'POST_ID', 'page':'PAGE_ID'}
+
+Engajamento com o post.
+
+Refere-se ao número de cliques nos links de um URL externa ou de um domínio de URL específico, bem como aos cliques nos links externos em uma Página ou um post.
+
+LINK_CLICKS
+
+Anúncios de domínio com optimization_goal= LINK_CLICKS
+
+{'action.type':'like',
+
+'page':PAGE_ID}]
+
+Curtidas na Página.
+
+Refere-se ao número de cliques nos links de um URL externo ou de um domínio de URL específico, bem como aos cliques nos links externos em uma Página ou um post.
+
+LINK_CLICKS
+
+Anúncios de domínio em que a otimização não foi definida como optimization_goal= LINK_CLICKS
+
+{'action.type':
+
+'link_click',
+
+'object':'PAGE_ID'}, {'action.type':'like',
+
+'page':PAGE_ID}
+
+Cliques no site e curtidas na Página.
+
+Refere-se ao número de cliques nos links de um URL externo ou de um domínio de URL específico, bem como aos cliques nos links externos em uma Página ou um post.
+
+MOBILE_APP_
+
+ENGAGEMENT
+
+Anúncios de engajamento de app para celular com qualquer opção de lance
+
+{'action.type':
+
+'post_engagement',
+
+'post':'POST_ID', 'page':'PAGE_ID'}
+
+Para anúncios de engajamento de app, é necessário indicar explicitamente uma especificação de rastreamento por meio do ID do app do Facebook:
+
+[{'action.type': 'mobile_app_install', 'application': 'APP_ID'}, {'action.type':
+
+'app_custom_event',
+
+'application':APP_ID}]
+
+Consulte a metaespecificação post_engagement. Além disso, refere-se ao número de ocorrências de um evento do app.
+
+MOBILE_APP_
+
+INSTALLS
+
+Anúncios de instalação de app para celular com qualquer opção de lance
+
+{'action.type':
+
+'post_engagement',
+
+'post':'POST_ID', 'page':'PAGE_ID'}
+
+Para anúncios de instalação do app, é necessário indicar explicitamente uma especificação de rastreamento por meio do ID do app do Facebook:
+
+[{'action.type':
+
+'app_custom_event',
+
+'application':APP_ID}, {'action.type': 'mobile_app_install', 'application': 'APP_ID'}]
+
+Consulte a metaespecificação post_engagement. Além disso, refere-se ao número de instalações feitas por usuários por meio de um anúncio de instalação de app para celular, se houver versão para iOS/Android, e à quantidade de ocorrências de um evento do app.
+
+NONE
+
+Qualquer tipo de anúncio
+
+Veja as especificações-padrão
+
+de rastreamento por tipo de anúncio.
+
+PAGE_LIKES
+
+Anúncios de curtida ou de post da Página com qualquer opção de lance
+
+{'action.type':
+
+'page_engagement', 'page':'PAGE_ID'}
+
+Consulte a metaespecificação de engajamento da Página.
+
+POST_ENGAGEMENT
+
+Anúncios de post da Página em que a otimização não foi definida como optimization_goal= POST_ENGAGEMENT
+
+{'action.type':
+
+'post_engagement',
+
+'post':'POST_ID', 'page':'PAGE_ID'}
+
+Consulte a metaespecificação de engajamento com o post da Página.
+
+POST_ENGAGEMENT
+
+Anúncios de post da Página com optimization_goal= POST_ENGAGEMENT
+
+vazio
+
+Consulte a metaespecificação de engajamento com o post da Página.
+
+POST_ENGAGEMENT (em testes)
+
+Qualquer um
+
+{'action.type':
+
+'dwell',
+
+'post':'POST_ID', 'page':'PAGE_ID'}
+
+Uma parcela pequena desse tipo de anúncio conta com o tipo de rastreamento dwell, com foco nos usuários que passam determinado tempo mínimo nos anúncios.
+
+PRODUCT_ CATALOG_SALES
+
+Anúncios dinâmicos de produtos
+
+{'action.type': 'post_engagement', 'page': PAGE_ID, 'post': POST_ID}
+
+Refere-se ao número de cliques no link em um post específico da Página se houver somente um link, à quantidade de engajamentos com o post e ao número de stories gerados ou de engajamentos de usuários com uma página. É possível especificar um conjunto de produtos diferente daquele que está no objeto promovido. Contudo, o conjunto especificado no objeto promovido é o padrão.
+
+
+
+Metaespecificações
+
+É possível determinar diversos tipos de ações em um objeto por meio de uma única especificação.
+
+ObjetoEspecificação de conversãoDescriçãoApp
+
+{"action.type":["app_engagement"], "application":["APPLICATION_ID"]}
+
+Refere-se ao número de stories app_story gerados e de engajamentos de usuários com o conteúdo via app_use, app_install e credit_spent.
+
+Página
+
+{"action.type":["page_engagement"], "page":["PAGE_ID"]}
+
+Refere-se ao número de vezes que os usuários realizaram alguma das ações a seguir no contexto da Página especificada: fazer check-in, comentar, seguir, curtir, curtir post da Página, mencionar, postar na Página, compartilhar post e responder pergunta. Inclui também as seguintes ações no contexto da Página especificada: clicar em um link, visualizar uma foto e reproduzir um vídeo nativo do FB.
+
+Post da Página
+
+{"action.type":["post_engagement"], "post":["POST_ID"], "page":["PAGE_ID"]}
+
+Refere-se ao número de vezes que os usuários realizaram as ações a seguir no contexto do post especificado: comentar, seguir pergunta, curtir, compartilhar e responder pergunta. Inclui também as seguintes ações de usuários: clicar em link, curtir Página, visualizar foto, reproduzir vídeo hospedado no Facebook ou iniciar reprodução de vídeo inline do Youtube. Use link_click para vídeos não incorporados.
+
+
+
+Especificações de rastreamento personalizadas
+
+Para criar suas próprias especificações de rastreamento, use a estrutura da especificação de ação. Consulte a Referência de especificações de ação.
+
+Ação (tipos de objeto)Descrição e detalhes da especificação de rastreamentoEspecificação de rastreamento ou de conversãoapp_custom_event (app)
+
+Evento personalizado em um app.
+
+Refere-se ao número de eventos personalizados em um app para celular.
+
+{'action.type':
+
+'app_custom_event',
+
+'application':APP_ID}
+
+app_install (app)
+
+Instalar um app.
+
+Refere-se ao número de instalações
+
+no Canvas ou no app para celular.
+
+[{'action.type':'app_install',
+
+'application':APP_ID},
+
+{'action.type':
+
+'mobile_app_install',
+
+'application':APP_ID}]
+
+app_use (app)
+
+Refere-se ao número de vezes que um app foi usado.
+
+{'action.type':'app_use',
+
+'application':APP_ID}
+
+checkin (local)
+
+Fazer check-in em um local.
+
+Refere-se ao número de check-ins no local ou em qualquer derivado da Página.
+
+{'action.type':'checkin',
+
+'page': PAGE_ID},
+
+{'action.type':'checkin',
+
+'page.parent:PAGE_ID}
+
+comment (post)
+
+Comentar em um post.
+
+Refere-se ao número de comentários em um post específico ou em qualquer post da Página.
+
+{'action.type':'comment',
+
+'post.wall':PAGE_ID},
+
+{'action.type':'comment',
+
+'post':POST_ID,
+
+'post.wall':PAGE_ID}
+
+credit_spend (app)
+
+Refere-se aos gastos de crédito em um app.
+
+'action.type':'credit_spent',
+
+'application':APP_ID}
+
+follow (pergunta)
+
+Assinar um objeto.
+
+Refere-se ao número de respostas ou de seguidas a uma pergunta.
+
+{'action.type':'vote', 'question':QUESTION_ID, 'question.creator':PAGE_ID}, {'action.type':'follow', 'question':QUESTION_ID, 'question.creator':PAGE_ID}
+
+leadgen_quality_conversion (pixel)
+
+Eventos de conversão de lead do funil inferior (CRM).
+
+{'action.type': 'leadgen_quality_conversion', 'fb_pixel': 'FACEBOOK_PIXEL_ID'}, {'action.type': 'leadgen_quality_conversion', 'dataset': 'OFFLINE_EVENT_SET_ID'}
+
+like
+
+(Página ou post)
+
+Curtir um objeto.
+
+Refere-se ao número de curtidas em uma Página ou post.
+
+{'action.type':'like',
+
+'page':PAGE_ID}
+
+, {'action.type':'like',
+
+'post.wall':PAGE_ID}
+
+, {'action.type':'like',
+
+'post':POST_ID,
+
+'post.wall':PAGE_ID}
+
+link_click (Página, post, URL ou domínio de URL)
+
+Clicar em um link.
+
+Refere-se ao número de cliques nos links de um URL externo ou de um domínio de URL específico, bem como aos cliques nos links externos em uma Página ou post.
+
+{'action.type':['link_click'],
+
+'object':['PAGE_ID']},
+
+{'action.type':['link_click'],
+
+'object.domain':
+
+['URL_DOMAIN']},
+
+{'action.type':['link_click'],
+
+'post.wall':['PAGE_ID']},
+
+{'action.type':['link_click'],
+
+'post':['POST_ID'],
+
+'post.wall':['PAGE_ID']}
+
+mention (Página)
+
+Mencionar uma Página.
+
+Refere-se ao número de menções de uma Página.
+
+{'action.type':'mention',
+
+'object':PAGE_ID'}
+
+offsite_conversion (pixel)
+
+Refere-se ao número de conversões externas e de receitas acumuladas.
+
+{'action.type':
+
+'offsite_conversion',
+
+'fb_pixel':
+
+'FACEBOOK_PIXEL_ID'}
+
+photo_view (Página)
+
+Visualizar uma foto.
+
+Refere-se ao número de visualizações de foto,
+
+video_plays ou link_clicks das fotos/vídeos/compartilhamentos de links de um post qualquer ou específico de uma Página.
+
+{'action.type':'photo_view', 'post.wall':PAGE_ID}
+
+{'action.type':'photo_view', 'post':POST_ID,
+
+'post.wall':PAGE_ID}
+
+post (post)
+
+Compartilhar um story.
+
+Refere-se ao número de posts de usuários em uma Página.
+
+{'action.type':'post',
+
+'post.wall':PAGE_ID}
+
+receive_offer (oferta)
+
+Obter uma oferta.
+
+Refere-se ao número de pessoas que obtiveram uma oferta específica.
+
+{'action.type':'receive_offer',
+
+'offer':OFFER_ID}
+
+rsvp (evento)
+
+Responder ao convite de um evento.
+
+Refere-se ao número de respostas (sim e talvez) a um evento. Os valores válidos são yes, maybe e no.
+
+{'action.type':'rsvp',
+
+'event': EVENT_ID},
+
+{'action.type':'rsvp',
+
+'response':'yes',
+
+'event': EVENT_ID},
+
+{'action.type':'rsvp',
+
+'response':'no',
+
+'event': EVENT_ID},
+
+{'action.type':'rsvp',
+
+'response':'maybe',
+
+'event': EVENT_ID}
+
+tab_view (Página)
+
+Visualizar uma aba da Página.
+
+Refere-se ao número de visualizações de uma aba de Página específica. Especifique uma Página para obter as visualizações de todas as abas.
+
+{'action.type':'tab_view',
+
+'page.tab.name':
+
+'PAGE_TAB_NAME', 'page':PAGE_ID},
+
+{'action.type':'tab_view',
+
+'page':PAGE_ID}
+
+video_play (post)
+
+Assistir a um vídeo.
+
+Refere-se ao número de visualizações de um post de vídeo qualquer ou específico de uma Página.
+
+{'action.type':'video_play', 'post.wall':PAGE_ID},{'action.type':'video_play', 'post':POST_ID,
+
+'post.wall':PAGE_ID}
+
+
+
+Exemplos
+
+Rastreamento de pixel
+
+Para rastrear o desempenho de pixels diferentes em um anúncio, especifique o pixel de rastreamento no campo tracking_specs do anúncio. Por exemplo:
+
+tracking_specs="[
+
+  {'action.type':'offsite_conversion','fb_pixel':1},
+
+  {'action.type':'offsite_conversion','fb_pixel':2},
+
+  {'action.type':'offsite_conversion','fb_pixel':3}
+
+]"
+
+Isso rastreia o desempenho dos pixels "1", "2" e "3". Se quiser otimizar somente o pixel “1”, defina o promoted_object do conjunto de anúncios principal. Isso é útil para otimizar CHECKOUT e, ao mesmo tempo, rastrear o número de REGISTRATION e ADD_TO_CART.
+
+Ao especificar a identificação do pixel em promoted_object, os pixels otimizados serão rastreados automaticamente. Dessa forma, não será necessário especificar esse pixel em tracking_specs.
+
+
+
+Como usar especificações de conversão
+
+conversion_specs é um campo para o anúncio. Ele segue o formato {'action.type':'{ACTION}', ... }, em que cada ação se aplica a um objeto. Veja a seguir exemplos de especificações de conversão para diversos tipos de anúncio:
+
+Tipo de anúncioEspecificação de conversãoAnúncio de domínio com contexto social
+
+{'action.type':'link_click', 'object':'PAGE_ID'}
+
+Anúncio de curtida na Página
+
+{'action.type':'like', 'page':PAGE_ID}
+
+Anúncio com link para o post da Página
+
+{'action.type':['link_click'], 'post': [POST_ID], 'post.wall':[PAGE_ID]}
+
+Todos os outros anúncios de post da Página
+
+{'action.type':'post_engagement', 'post':'POST_ID', 'page':'PAGE_ID'}
+
+Anúncio de evento
+
+{'action.type':'rsvp' , 'response':'yes', 'event':'EVENT_ID'}
+
+Anúncio de oferta
+
+{'action.type':'receive_offer', 'offer':OFFER_ID, 'offer.creator':PAGE_ID}
+
+Anúncio de instalação de app para celular
+
+Não se aplica – não é possível criar esse tipo de anúncio com um objetivo NONE
+
+Anúncios de engajamento de app para celular
+
+Não se aplica – somente tipos de lance de CPC e de CPM são compatíveis
+
+Anúncio de instalação do app Canvas
+
+Não se aplica – não é possível criar esse tipo de anúncio com um objetivo NONE
+
+Anúncio de engajamento do app Canvas
+
+Não se aplica – não é possível criar esse tipo de anúncio com um objetivo NONE
+
+Algumas especificações de conversão contêm diversas ações que se aplicam a um único objeto. Elas são chamadas de metaespecificações. Veja exemplos a seguir:
+
+ObjetoEspecificação de conversãoDescriçãoPágina
+
+{"action.type":["page_engagement"], "page":["PAGE_ID"]}
+
+Refere-se ao número de vezes que alguém realiza as ações a seguir em uma Página específica: fazer check-in, comentar, seguir, curtir, curtir post da Página, mencionar, postar na Página, compartilhar post e responder pergunta. Inclui também as seguintes ações em uma Página específica: visualizar foto e reproduzir vídeo nativo do Facebook.
+
+Post da Página
+
+{"action.type":["post_engagement"], "post":["POST_ID"], "page":["PAGE_ID"]}
+
+Refere-se ao número de vezes que alguém realiza uma das ações a seguir em um post específico: comentar, seguir pergunta, curtir, compartilhar, obter oferta e responder pergunta. Inclui também as ações a seguir: clicar em link, curtir Página, visualizar foto, reproduzir vídeo hospedado no Facebook ou iniciar reprodução de vídeo inline do Youtube. Use link_click para vídeos não incorporados.
+
+App
+
+{"action.type":["app_engagement"], "application":["APPLICATION_ID"]}
+
+Refere-se ao número de stories app_story gerados ou de engajamentos com o conteúdo como app_use, app_install ou credit_spent.
+
+
+
+Boas práticas
+
+Alterações de anúncio acionando análises de anúncio
+
+Caso faça alguma alteração nos seguintes cenários, o anúncio será acionado para análise:
+
+Quaisquer alterações no criativo (imagem, texto, link, vídeo, entre outros)
+
+Quaisquer alterações de direcionamento
+
+Quaisquer alterações de metas de otimização e eventos de cobrança também podem acionar a análise
+
+Observação: as alterações realizadas em valor do lance, orçamento e conjunto de anúncios não afetarão o status da análise.
+
+Além disso, se um anúncio entrar na Análise de anúncios com o status de veiculação “Pausado”, ele permanecerá nesse status ao sair da Análise de anúncios. Caso contrário, o anúncio será considerado ativo e pronto para veiculação.
+
+
+
+Paginação
+
+Para obter dados de resposta da paginação, consulte a Paginação da Graph API.
+
+
+
+Informações do usuário
+
+Armazene IDs dos usuários, chaves de sessão e identificação da conta de anúncios para facilitar o acesso programático a esses dados e mantê-los juntos. Isso é importante porque as chamadas feitas com o número de identificação da conta de um usuário e a chave de sessão de outro usuário falharão se houver erro de permissão. O armazenamento de dados do usuário precisa ser realizado em conformidade com os Termos da Plataforma do Facebook e com as Políticas do Desenvolvedor.
+
+
+
+Lances sugeridos
+
+Execute relatórios frequentes das campanhas, uma vez que os lances sugeridos mudam de forma dinâmica em resposta aos concorrentes que usam direcionamentos semelhantes. As sugestões de lance serão atualizadas em algumas horas, dependendo dos lances dos concorrentes.
+
+
+
+Solicitações em lote
+
+Para fazer solicitações múltiplas à API com uma única chamada, consulte:
+
+Solicitações múltiplas
+
+Solicitações em lote
+
+Também é possível consultar diversos objetos pelo ID da seguinte forma:
+
+https://graph.facebook.com/<API_VERSION>?ids=[id1,id2]
+
+Para fazer uma consulta por campo específico:
+
+https://graph.facebook.com/<API_VERSION>?ids=[id1,id2]&amp;fields=field1,field2
+
+
+
+Verificar alterações de dados com ETags
+
+Para verificar rapidamente se a resposta a uma solicitação foi alterada desde a última vez, consulte:
+
+Blog de ETags
+
+Referência sobre ETags
+
+
+
+Status de arquivado e excluído do objeto
+
+Os objetos de anúncio têm dois tipos de estado de exclusão: arquivado e excluído. É possível consultar objetos arquivados e excluídos com a identificação do objeto. Entretanto, não retornaremos os objetos excluídos se você os solicitar a partir da borda de outro objeto.
+
+É possível arquivar até 5 mil objetos a cada vez. Deve-se passar os objetos de anúncio do estado arquivado para o excluído se não precisar mais carregá-los por meio de bordas. Para saber como os estados funcionam e ver exemplos de chamadas, consulte Armazenamento de objetos de anúncio.
+
+
+
+Visualizar erros
+
+De forma incorreta, as pessoas tentam criar anúncios que não são aceitos. O documento Códigos de erro apresenta causas de falhas em chamadas de API. É recomendável exibir o erro aos usuários de alguma maneira para que possam corrigir os anúncios.
+
+
+
+Grupo da comunidade de desenvolvedores de marketing do Facebook
+
+Participe do grupo da Comunidade de Desenvolvedores de Marketing do Facebook para receber notícias e atualizações sobre a API de Marketing. Postamos itens do blog da API de Marketing no grupo.
+
+
+
+Teste
+
+O modo sandbox é um ambiente de testes para leitura e gravação de chamadas da API de Marketing sem veiculação dos anúncios. Consulte Modo sandbox para desenvolvedores
+
+Experimente fazer chamadas de API com o Explorador da Graph API. Experimente fazer qualquer chamada à API de Marketing. Veja a post de blog. Selecione seu app em App e conceda a ele a permissão ads_management ou ads_read em extended permissions quando criar um token de acesso. Use ads_read se você precisar de acesso à API de Insights sobre Anúncios apenas para gerar relatórios. Use ads_management para ler e atualizar anúncios em uma conta.
+
+Para desenvolvedores e acesso básico, configure uma lista de contas de anúncios para as quais o app pode fazer chamadas de API. Consulte a lista de contas.
+
+Você pode usar o modo sandbox para demonstrar seu app na análise. No entanto, não é possível criar anúncios nem criativos do anúncio no modo sandbox. Por isso, será preciso usar identificações de anúncios e de criativos do anúncio embutidos em código para demonstrar seu uso da API para análise de apps.
+
+Critérios básicos
+
+Demonstrar valor além das soluções principais do Facebook, como o Gerenciador de anúncios do Facebook.
+
+
+
+Voltado para os objetivos do negócio, como aumentar as vendas. Os objetivos comerciais do Facebook podem ser encontrados aqui.
+
+
+
+Solicitações em lote
+
+Envie uma única solicitação HTTP com múltiplas chamadas da Graph API do Facebook. As operações independentes são processadas em paralelo, enquanto as operações dependentes são processadas em sequência. Quando todas as operações forem concluídas, uma resposta consolidada será enviada de volta a você e a conexão HTTP será encerrada.
+
+O ordenamento das respostas corresponde à ordem das operações na solicitação. Processe as respostas de acordo com a ordem para determinar quais operações foram bem-sucedidas e quais deverão ser repetidas em uma operação subsequente.
+
+Limitações
+
+Há um limite de 50 solicitações por lote. Cada chamada dentro do lote será contada separadamente para fins de cálculo dos limites de chamada de API e de recurso. Por exemplo, um lote com 10 chamadas de API será contabilizado como 10 chamadas, e cada chamada dentro do lote contribuirá com os limites de recurso de CPU da mesma maneira. Para ver mais informações, consulte nosso Guia de limitação de volume.
+
+As solicitações em lote não podem incluir vários conjuntos de anúncios na mesma campanha. Saiba mais sobre como fazer solicitações da API de Marketing em lote.
+
+Solicitação em lote
+
+Uma solicitação em lote usa um objeto JSON contendo uma matriz das solicitações. Ela retorna uma matriz de respostas HTTP lógicas representadas como matrizes JSON. Cada resposta tem um código de status, uma matriz de cabeçalhos opcionais e um corpo opcional (que é uma string codificada em JSON).
+
+Para fazer uma solicitação em lote, envie uma solicitação POST a um ponto de extremidade em que o parâmetro batch é seu objeto JSON.
+
+POST /ENDPOINT?batch=[JSON-OBJECT]
+
+Exemplo de solicitação em lote
+
+Neste exemplo, obteremos informações sobre duas Páginas gerenciadas pelo nosso aplicativo.
+
+Formatado para leitura
+
+.
+
+curl -i -X POST 'https://graph.facebook.com/me?batch=  
+
+  [
+
+    {
+
+      "method":"GET",
+
+      "relative_url":"PAGE-A-ID"
+
+    },  
+
+    {
+
+      "method":"GET",
+
+      "relative_url":"PAGE-B-ID"
+
+    }
+
+  ]
+
+  &include_headers=false             // Included to remove header information
+
+  &access_token=ACCESS-TOKEN'
+
+Depois que todas as operações forem concluídas, uma resposta será enviada com o resultado de cada uma. Como os cabeçalhos retornados podem ser muito maiores do que a resposta real da API, convém removê-los para manter a eficiência. Para incluir as informações do cabeçalho, remova o parâmetro include_headers ou o defina como true.
+
+Exemplo de resposta
+
+O campo "body" contém um objeto JSON codificado com string:
+
+[
+
+  {
+
+    "code": 200,
+
+    "body": "{
+
+      \"name\": \"Page A Name\",
+
+      \"id\": \"PAGE-A-ID\"
+
+      }"
+
+  },
+
+  {
+
+    "code": 200,
+
+    "body": "{
+
+      \"name\": \"Page B Name\",
+
+      \"id\": \"PAGE-B-ID\"
+
+      }"
+
+  }]
+
+
+
+Solicitações em lote complexas
+
+É possível combinar operações que normalmente usariam métodos HTTP diferentes em uma única solicitação em lote. Embora as operações GET e DELETE possam ter apenas um campo relative_url e um campo method, as operações POST e PUT podem conter um campo body opcional. O corpo deve ser formatado como uma string HTTP POST bruta semelhante a uma string de consulta de URL.
+
+Exemplo de solicitação
+
+Em uma única operação, o exemplo a seguir faz uma publicação em uma Página que gerenciamos e na qual temos permissões de publicação e, em seguida, no feed da Página:
+
+curl "https://graph.facebook.com/PAGE-ID?batch=
+
+  [
+
+    { 
+
+      "method":"POST",
+
+      "relative_url":"PAGE-ID/feed",
+
+      "body":"message=Test status update"
+
+    },
+
+    { 
+
+      "method":"GET",
+
+      "relative_url":"PAGE-ID/feed"
+
+    }
+
+  ]
+
+  &access_token=ACCESS-TOKEN"
+
+O resultado dessa chamada seria o seguinte:
+
+[
+
+    { "code": 200,
+
+      "headers": [
+
+          { "name":"Content-Type", 
+
+            "value":"text/javascript; charset=UTF-8"}
+
+       ],
+
+      "body":"{\"id\":\"…\"}"
+
+    },
+
+    { "code": 200,
+
+      "headers": [
+
+          { "name":"Content-Type", 
+
+            "value":"text/javascript; charset=UTF-8"
+
+          },
+
+          { "name":"ETag", 
+
+            "value": "…"
+
+          }
+
+      ],
+
+      "body": "{\"data\": [{…}]}
+
+    }
+
+]
+
+O exemplo a seguir cria um anúncio para uma campanha e, em seguida, obtém os detalhes do objeto recém-criado. Observe a URLEncoding do parâmetro "body":
+
+curl \-F 'access_token=...' \-F 'batch=[
+
+  {
+
+    "method":"POST",
+
+    "name":"create-ad",
+
+    "relative_url":"11077200629332/ads",
+
+    "body":"ads=%5B%7B%22name%22%3A%22test_ad%22%2C%22billing_entity_id%22%3A111200774273%7D%5D"
+
+  }, 
+
+  {
+
+    "method":"GET",
+
+    "relative_url":"?ids={result=create-ad:$.data.*.id}"
+
+  }
+
+]' \
+
+https://graph.facebook.com
+
+O exemplo a seguir adiciona várias páginas a um Gerenciador de Negócios:
+
+curl \-F 'access_token=<ACCESS_TOKEN>' \-F 'batch=[
+
+  {
+
+    "method":"POST",
+
+    "name":"test1",
+
+    "relative_url":"<BUSINESS_ID>/owned_pages",
+
+    "body":"page_id=<PAGE_ID_1>"
+
+  }, 
+
+  {
+
+    "method":"POST",
+
+    "name":"test2",
+
+    "relative_url":"<BUSINESS_ID>/owned_pages",
+
+    "body":"page_id=<PAGE_ID_2>"
+
+  }, 
+
+  {
+
+    "method":"POST",
+
+    "name":"test3",
+
+    "relative_url":"<BUSINESS_ID>/owned_pages",
+
+    "body":"page_id=<PAGE_ID_3>"
+
+  }, 
+
+]' \"https://graph.facebook.com/v12.0"
+
+Em que:
+
+<ACCESS_TOKEN> é um token de acesso com a permissão business_management.
+
+<BUSINESS_ID> é o ID do Gerenciador de Negócios ao qual as páginas devem ser obtidas.
+
+<PAGE_ID_n> são as identificações das Páginas que serão obtidas.
+
+
+
+Erros
+
+É possível que uma das operações solicitadas resulte em erro. Isso pode ocorrer por você não ter permissão para executar a operação solicitada, por exemplo. A resposta será semelhante à padrão da Graph API, porém encapsulada na sintaxe de resposta em lote:
+
+[
+
+    { "code": 403,
+
+      "headers": [
+
+          {"name":"WWW-Authenticate", "value":"OAuth…"},
+
+          {"name":"Content-Type", "value":"text/javascript; charset=UTF-8"} ],
+
+      "body": "{\"error\":{\"type\":\"OAuthException\", … }}"
+
+    }]
+
+As outras solicitações no lote deverão ser concluídas e retornadas normalmente com o código de status 200.
+
+
+
+Tempos-limite
+
+Lotes grandes ou complexos poderão atingir o tempo-limite caso a operação demore demais para concluir todas as solicitações. Nesse caso, o resultado será um lote concluído parcialmente. Nos lotes concluídos parcialmente, as solicitações bem-sucedidas retornarão a resposta-padrão com o código de status 200. As solicitações não concluídas retornarão a resposta null. É possível refazer todas as solicitações malsucedidas.
+
+
+
+Chamadas em lote com JSONP
+
+A API em lote é compatível com JSONP, assim como o restante da Graph API. A função de retorno de chamada JSONP é especificada usando o parâmetro post de formulário ou de string de consulta callback.
+
+
+
+Como usar diversos tokens de acesso
+
+As solicitações individuais de uma solicitação em lote única podem especificar os próprios tokens de acesso como uma string de consulta ou um parâmetro post de formulário. Nesse caso, o token de acesso de nível superior é considerado um token de fallback que será usado caso uma solicitação individual não especifique um token de acesso de forma explícita.
+
+Isso poderá ser útil se você quiser consultar a API usando diversos tokens de acesso de usuário ou de Página ou caso algumas das chamadas precisem ser feitas com um token de acesso do aplicativo.
+
+Você precisará incluir um token de acesso como parâmetro de nível superior mesmo quando todas as solicitações individuais tiverem os próprios tokens.
+
+
+
+Carregar dados binários
+
+É possível carregar diversos itens binários como parte de uma chamada em lote. Para isso, você precisa adicionar todos os itens binários como anexos multipart/mime à solicitação. Além disso, cada operação precisa referenciar os itens binários por meio da propriedade attached_files. A propriedade attached_files pode receber uma lista de nomes de anexos separados por vírgula no próprio valor.
+
+O exemplo a seguir mostra como carregar duas fotos em uma única chamada em lote:
+
+curl 
+
+     -F 'access_token=…' \
+
+     -F 'batch=[{"method":"POST","relative_url":"me/photos","body":"message=My cat photo","attached_files":"file1"},{"method":"POST","relative_url":"me/photos","body":"message=My dog photo","attached_files":"file2"},]' \
+
+     -F 'file1=@cat.gif' \
+
+     -F 'file2=@dog.jpg' \
+
+    https://graph.facebook.com
+
+
+
+Solicitações em lote e assíncronas
+
+Use solicitações assíncronas para criar anúncios e enviar diversas solicitações de anúncio sem necessidade de bloqueio. Especifique uma URL para chamada após a conclusão das solicitações ou verifique o status da solicitação. Veja a referência sobre anúncios.
+
+A forma mais eficaz de gerenciar anúncios é por meio de solicitações em lote. Use essa informação para desempenhar algumas das solicitações mais comuns.
+
+Solicitações assíncronas
+
+Por exemplo, obtenha o status do conjunto de solicitações assíncronas:
+
+curl -G \
+
+  -d 'fields=name,success_count,error_count,is_completed' \
+
+  -d 'access_token=<ACCESS_TOKEN>' \
+
+  https://graph.facebook.com/v24.0/<REQUEST_SET_ID>
+
+Isso retorna o status geral do conjunto de solicitações assíncronas como um objeto JSON. Nem todos os campos aparecem por padrão. Se você quiser que a consulta inclua campos não padrão, especifique esses campos em fields, como fields=id,owner_id,name,total_count,success_count,error_count,is_completed.
+
+NomeDescriçãoid
+
+tipo: int
+
+Exibido por padrão.
+
+O id do conjunto atual de solicitações assíncronas.
+
+owner_id
+
+tipo: int
+
+Exibido por padrão.
+
+A qual objeto pertence esse conjunto de solicitações assíncronas. Para solicitações assíncronas de anúncios, owner_id será a identificação da conta.
+
+name
+
+tipo: cadeia de caracteres
+
+Exibido por padrão.
+
+O nome desse conjunto de solicitações assíncronas.
+
+is_completed
+
+tipo: booliano
+
+Exibido por padrão.
+
+As solicitações assíncronas desse conjunto foram concluídas.
+
+total_count
+
+tipo: int
+
+Não exibido por padrão.
+
+O total de solicitações desse conjunto.
+
+initial_count
+
+tipo: int
+
+Não exibido por padrão.
+
+O número de solicitações ainda não exibidas.
+
+in_progress_count
+
+tipo: int
+
+Não exibido por padrão.
+
+O número de solicitações em andamento.
+
+success_count
+
+tipo: int
+
+Não exibido por padrão.
+
+O número de solicitações concluídas com sucesso.
+
+error_count
+
+tipo: int
+
+Não exibido por padrão.
+
+O número de solicitações concluídas com falha.
+
+canceled_count
+
+tipo: int
+
+Não exibido por padrão.
+
+O número de solicitações canceladas pelo usuário.
+
+notification_uri
+
+tipo: cadeia de caracteres
+
+Não exibido por padrão.
+
+O URI de notificação desse conjunto de solicitações assíncronas.
+
+notification_mode
+
+tipo: cadeia de caracteres
+
+Não exibido por padrão.
+
+O modo de recebimento de notificações. Os valores válidos incluem o seguinte:
+
+OFF – sem notificações
+
+ON_COMPLETE – enviar notificação quando todo o conjunto for concluído
+
+Depois de obter o status geral do conjunto de solicitações assíncronas, verifique os detalhes de cada solicitação:
+
+curl -G \
+
+  -d 'fields=id,status' \
+
+  -d 'access_token=<ACCESS_TOKEN>' \
+
+  https://graph.facebook.com/v24.0/<REQUEST_SET_ID>/requests   
+
+Isso retorna o status e os detalhes de cada solicitação do conjunto de solicitações assíncronas. Para a criação de anúncio assíncrona, faça uma solicitação para cada anúncio. O parâmetro status é usado para filtrar solicitações por status e pode ser uma combinação dos valores a seguir:
+
+initial – não processado ainda.
+
+in_progress – solicitação em processamento.
+
+success – solicitação concluída com sucesso.
+
+error – solicitação concluída com falha
+
+canceled – solicitação cancelada pelo usuário.
+
+A resposta é uma matriz JSON com campos-padrão. Para incluir campos não padrão, especifique o campo em fields, como fields=id,scope_object_id,status,result,input,async_request_set.
+
+NomeDescriçãoid
+
+tipo: int
+
+Exibido por padrão.
+
+O ID da solicitação assíncrona.
+
+scope_object_id
+
+tipo: int
+
+Exibido por padrão.
+
+O ID principal do objeto criado pela solicitação. Se você criar um anúncio, esta será a identificação do conjunto desse novo anúncio.
+
+status
+
+tipo: cadeia de caracteres
+
+Exibido por padrão.
+
+O status dessa solicitação assíncrona. Opções:
+
+Initial – não processado ainda.
+
+In_progress – solicitação em processamento.
+
+Success – solicitação concluída com sucesso.
+
+Error – solicitação concluída com falha
+
+Canceled – solicitação cancelada pelo usuário
+
+result
+
+tipo: matriz
+
+Não exibido por padrão.
+
+Se a solicitação for finalizada, ela exibirá o resultado da solicitação.
+
+Quando há sucesso, o resultado é igual a uma solicitação não assíncrona. Por exemplo, se você criar um anúncio, o resultado para cada solicitação é a identificação do novo anúncio. Em caso de erro, será matriz do seguinte:
+
+error_code – código de erro retornado
+
+error_message – mensagem de erro
+
+input
+
+tipo: objeto
+
+Não exibido por padrão.
+
+A entrada original dessa solicitação assíncrona. Se você criar um anúncio, a entrada será adgroup_spec.
+
+async_request_set
+
+tipo: objeto
+
+Não exibido por padrão.
+
+O conjunto de solicitações assíncronas que contém essa solicitação em particular.
+
+Obter detalhes da solicitação
+
+Para obter os detalhes de uma solicitação assíncrona, faça a seguinte chamada:
+
+curl -G \
+
+  -d 'fields=id,status' \
+
+  -d 'access_token=<ACCESS_TOKEN>' \
+
+  https://graph.facebook.com/v24.0/<REQUEST_SET_ID>/requests   
+
+Isso retorna um objeto JSON com os campos listados acima.
+
+Listar os conjuntos de solicitações de uma conta
+
+É possível criar diversos conjuntos de solicitações assíncronas de anúncio. Para consultar todos os conjuntos desse tipo de uma conta de anúncios:
+
+curl -G \
+
+  -d 'access_token=<ACCESS_TOKEN>' \
+
+  https://graph.facebook.com/v24.0/act_<AD_ACCOUNT_ID>/asyncadrequestsets  
+
+Isso retorna uma matriz JSON de objetos do conjunto de solicitações assíncronas. Cada objeto é igual ao especificado na seção conjunto de solicitações assíncronas. Filtre os resultados com is_completed. Se is_completed=true, somente os conjuntos de solicitações assíncronas concluídos serão exibidos.
+
+Listar as solicitações de um conjunto de anúncios
+
+Você pode fazer uma chamada assíncrona para criar anúncios em conjuntos diferentes. Para ver o status de cada conjunto de anúncios, obtenha todas as solicitações de criação de anúncio de um conjunto:
+
+curl -G \
+
+  -d 'fields=id,status' \
+
+  -d 'access_token=<ACCESS_TOKEN>' \
+
+  https://graph.facebook.com/v24.0/<AD_SET_ID>/asyncadrequests
+
+Isso retorna uma matriz JSON de objetos de solicitação assíncrona. Os campos de status, filtros e solicitações assíncronas são iguais à API https://graph.facebook.com/&lt;API_VERSION>/&lt;REQUEST_SET_ID>/requests.
+
+Atualizar conjuntos de solicitações
+
+É possível alterar name, notification_uri e notification_mode de um conjunto de solicitações assíncronas.
+
+curl \
+
+  -F 'name=New Name' \
+
+  -F 'notification_mode=OFF' \
+
+  -F 'access_token=<ACCESS_TOKEN>' \
+
+  https://graph.facebook.com/v24.0/<REQUEST_SET_ID>
+
+O retorno será true se a atualização for bem-sucedida. A alteração de notification_uri e notification_mode só pode ser feita antes do envio da notificação.
+
+Cancelar solicitação
+
+É possível cancelar uma solicitação assíncrona, mas isso só pode ser feito se a solicitação ainda não tiver sido processada.
+
+curl -X DELETE \
+
+  -d 'access_token=<ACCESS_TOKEN>' \
+
+  https://graph.facebook.com/v24.0/<REQUEST_ID>
+
+O retorno será true se o cancelamento for bem-sucedido. Também é possível cancelar solicitações ainda não processadas no conjunto de solicitações assíncronas:
+
+curl -X DELETE \
+
+  -d 'access_token=<ACCESS_TOKEN>' \
+
+  https://graph.facebook.com/v24.0/<REQUEST_SET_ID>
+
+O retorno será true se o cancelamento for bem-sucedido.
+
+Exemplos de solicitações assíncronas
+
+Obter o status de uma solicitação assíncrona específica:
+
+//pretty=true for command line readable output
+
+curl -G \-d "id=6012384857989" \-d "pretty=true" \-d "access_token=_____" \"https://graph.facebook.com/v24.0/"
+
+Valores de retorno:
+
+{
+
+   "id": "6012384857989",
+
+   "owner_id": 12345,
+
+   "name": "testasyncset",
+
+   "is_completed": true}
+
+Obter os resultados de solicitações:
+
+curl -G \-d "id=6012384857989" \-d "pretty=true" \-d "fields=result" \-d "access_token=_____" \"https://graph.facebook.com/v24.0/requests"
+
+Retorna:
+
+{
+
+   "data": [
+
+      {
+
+         "result": {
+
+            "id": "6012384860989"
+
+         },
+
+         "id": "6012384858389"
+
+      },
+
+      {
+
+         "result": {
+
+            "id": "6012384858789"
+
+         },
+
+         "id": "6012384858189"
+
+      }
+
+   ],
+
+   "paging": {
+
+      "cursors": {
+
+         "after": "___",
+
+         "before": "___"
+
+      }
+
+   }}
+
+Obter a lista dos conjuntos de solicitações de uma conta de anúncios:
+
+curl -G \-d "is_completed=1" \-d "pretty=true" \-d "access_token=___" \"https://graph.facebook.com/v24.0/act_71597454/asyncadrequestsets"
+
+Retorna:
+
+{
+
+   "data": [
+
+      {
+
+         "id": "6012384253789",
+
+         "owner_id": 71597454,
+
+         "name": "testasyncset",
+
+         "is_completed": true
+
+      },
+
+   ],
+
+   "paging": {
+
+      "cursors": {
+
+         "after": "___",
+
+         "before": "___"
+
+      }
+
+   }}
+
+Obter uma lista das solicitações de uma campanha:
+
+curl -G \-d "status=SUCCESS,ERROR" \-d "pretty=true" \-d "access_token=___" \"https://graph.facebook.com/v24.0/6008248529789/asyncadrequests"
+
+    
+
+Valores de retorno:
+
+{
+
+   "data": [
+
+      {
+
+         "id": "6012384951789",
+
+         "scope_object_id": 6008248529789,
+
+         "status": "SUCCESS"
+
+      },
+
+   ],
+
+   "paging": {
+
+      "cursors": {
+
+         "after": "___",
+
+         "before": "___"
+
+      }
+
+   }}
+
+
+
+Solicitações em lote
+
+Com solicitações em lote, combine um número de chamadas da Graph API a uma solicitação HTTP. A API de Marketing dividiu essa solicitação em solicitações menores. Isso faz com que as solicitações em lote sejam a maneira mais eficiente de interagir com a API de Marketing. Para incrementar essa eficiência, é possível realizar solicitações em lote paralelas usando tópicos de processamento separados.
+
+Cada solicitação em lote pode conter um máximo de 50 solicitações. Para a criação de anúncio, é preciso ter 10 ou menos anúncios por lote.
+
+Solicitações em lote para anúncios, criativos de anúncio e conjuntos de anúncio são semelhantes e por isso não são discutidas separadamente aqui. Para mais informações, consulte solicitações em lote da Graph API e ETags.
+
+Criar anúncios
+
+É possível fornecer o criativo e outros objetos de anúncio em uma solicitação em lote. Por exemplo: você pode criar três anúncios usando um criativo de anúncio e três especificações de direcionamento diferentes. Primeiro, defina o criativo do anúncio. Depois, consulte-o ao criar cada anúncio:
+
+curl -F 'access_token=______' 
+
+  -F 'test1=@./test1.jpg'  
+
+  -F 'batch=[
+
+             {
+
+              "method": "POST",
+
+              "name": "create_adimage",
+
+              "relative_url": "<API_VERSION>/act_187687683/adimages",
+
+              "attached_files": "test1"
+
+             },
+
+             {
+
+              "method": "POST",
+
+              "name": "create_creative",
+
+              "relative_url": "<API_VERSION>/act_187687683/adcreatives",
+
+              "attached_files": "test1",
+
+              "body": "name=sample creative&object_story_spec={\"link_data\": {\"image_hash\": \"{result=create_adimage:$.images.*.hash}\", \"link\": \"https://www.test12345.com\", \"message\": \"this is a sample message\"}, \"page_id\":\"12345678\"}&degrees_of_freedom_spec={\"creative_features_spec\": {\"standard_enhancements\": {\"enroll_status\": \"OPT_OUT\"}}}"
+
+             },
+
+             {
+
+              "method": "POST",
+
+              "relative_url": "<API_VERSION>/act_187687683/ads",
+
+              "body": "adset_id=6004163746239&redownload=1&status=PAUSED&optimization_goal=REACH&billing_event=IMPRESSIONS&&creative={\"creative_id\":\"{result=create_creative:$.id}\"}&targeting={\"countries\":[\"US\"]}&name=test1"
+
+             },
+
+             {
+
+              "method": "POST",
+
+              "relative_url": "<API_VERSION>/act_187687683/ads",
+
+              "body": "adset_id=6004163746239&redownload=1&status=PAUSED&optimization_goal=REACH&billing_event=IMPRESSIONS&&creative={\"creative_id\":\"{result=create_creative:$.id}\"}&targeting={\"countries\":[\"US\"]}&name=test2"
+
+             },
+
+             {
+
+              "method": "POST",
+
+              "relative_url": "<API_VERSION>/act_187687683/ads",
+
+              "body": "adset_id=6004163746239&redownload=1&status=PAUSED&optimization_goal=REACH&billing_event=IMPRESSIONS&&creative={\"creative_id\":\"{result=create_creative:$.id}\"}&targeting={\"countries\":[\"US\"]}&name=test3"
+
+             }
+
+            ]' https://graph.facebook.com/
+
+A resposta inclui códigos individuais de resposta para cada solicitação e a resposta-padrão da Graph API. Para mais detalhes, veja Como fazer várias solicitações de API.
+
+O processo de solicitação em lote usa o formato de expressão JSONPath como referência a solicitações anteriores.
+
+Atualizar anúncios
+
+É possível atualizar anúncios por meio de solicitações em lote. Para atualizar lances em três anúncios:
+
+curl -F 'access_token=____' 
+
+  -F 'batch=[
+
+             {
+
+              "method": "POST",
+
+              "relative_url": "<API_VERSION>/6004251715639",
+
+              "body": "redownload=1&name=new name"
+
+             },
+
+             {
+
+              "method": "POST",
+
+              "relative_url": <API_VERSION>/v6004251716039",
+
+              "body": "redownload=1&name=new name"
+
+             },
+
+             {
+
+              "method": "POST",
+
+              "relative_url": "<API_VERSION>/6004251715839",
+
+              "body": "redownload=1&name=new name"
+
+             }
+
+            ]' https://graph.facebook.com
+
+Se incluir redownload=1 na URL relativa, você obterá os detalhes completos do anúncio, incluindo a identificação. Isso ajuda a identificar quais anúncios foram atualizados.
+
+Para atualizar o criativo do anúncio, especifique todo o criativo ou forneça uma nova identificação correspondente. Isso acontece porque os criativos de anúncios não podem ser editados depois que forem criados, exceto pelo nome e status de execução.
+
+Ler anúncios
+
+Se você tiver uma grande quantidade de anúncios, divida a solicitação em várias dentro de uma solicitação em lote:
+
+curl -F 'access_token=____' 
+
+  -F 'batch=[
+
+             {
+
+              "method": "GET",
+
+              "relative_url": "<API_VERSION>/?ids=6003356308839,6004164369439&fields=<comma separated list of fields>"
+
+             },
+
+             {
+
+              "method": "GET",
+
+              "relative_url": "<API_VERSION>/6003356307839/ads&fields=<comma separated list of fields>"
+
+             },
+
+             {
+
+              "method": "GET",
+
+              "relative_url": "<API_VERSION>/act_187687683/ads?adset_ids=[6003356307839, 6004164259439]&fields=<comma separated list of fields>"
+
+             }
+
+            ]' https://graph.facebook.com
+
+6003356308839 e 6004164369439 são identificações do anúncio, ao passo que 6003356307839 e 6004164259439 são identificações do conjunto de anúncios.
+
+Insights sobre Anúncios
+
+Se você tiver uma grande quantidade de Insights sobre Anúncios, divida a solicitação em várias dentro de uma solicitação em lote:
+
+curl -F 'access_token=____' 
+
+  -F 'batch=[
+
+             {
+
+              "method": "GET",
+
+              "relative_url": "<API_VERSION>/act_19643108/insights?filtering=[{field:'ad.id',operator:'IN',value:[6003356308839,6004164369439]}]"
+
+             },
+
+             {
+
+              "method": "GET",
+
+              "relative_url": "<API_VERSION>/6003356308839/insights"
+
+             },
+
+             {
+
+              "method": "GET",
+
+              "relative_url": "<API_VERSION>/act_187687683/insights?filtering=[{field:'adset.id',operator:'IN',value:[6003356307839, 6004164259439]}]"
+
+             }
+
+            ]' https://graph.facebook.com
+
+No exemplo, 6003356308839 e 6004164369439 são identificações do anúncio, ao passo que 6003356307839 e 6004164259439 são identificações do conjunto de anúncios.
+
+Em contas de anúncio com um grande número de anúncios, o uso de act_<account_ID>/adgroupstats não é recomendado, pois pode causar o encerramento da solicitação.
+
+Solicitações em lote para estimativa de alcance
+
+É possível solicitar até 50 estimativas de alcance em uma única solicitação em lote. No exemplo a seguir, a estimativa de alcance é solicitada para duas especificações de direcionamento diferentes:
+
+curl -F 'access_token=____' 
+
+  -F 'batch=[
+
+             {
+
+              "method": "GET",
+
+              "relative_url": "<API_VERSION>/act_600335/reachestimate?targeting_spec={'geo_locations': {'countries':['US']}}"
+
+             },
+
+             {
+
+              "method": "GET",
+
+              "relative_url": "<API_VERSION>/act_600335/reachestimate?targeting_spec={'geo_locations': {'countries':['FR']}}"
+
+             }
+
+            ]' https://graph.facebook.com
+
+
+
+API em Lote
+
+A API em lote permite fazer solicitações em lote e enviá-las de maneira assíncrona. Agrupe várias chamadas da Graph API em uma única solicitação HTTP e as execute de forma assíncrona sem a necessidade de bloquear. Você pode também especificar dependências entre operações relacionadas.
+
+O Facebook processa cada operação independente de maneira paralela e as operações dependentes de forma sequencial. Cada chamada de API pode ter até 1.000 solicitações.
+
+Fazer uma chamada da API em lote
+
+Para fazer uma chamada da API em Lote:
+
+curl \-F "access_token=___" \-F "name=asyncbatchreqs" \-F "adbatch=<an array of requests>"\"https://graph.facebook.com/v24.0/act_<AD_ACCOUNT_ID>/async_batch_requests"
+
+Forneça uma matriz de solicitações HTTP POST como matrizes JSON. Cada solicitação tem o seguinte:
+
+name
+
+relative_url - porção da URL após graph.facebook.com
+
+body
+
+A API retorna um ID que você usa para consultar o progresso das solicitações.
+
+Por exemplo, crie uma campanha com um conjunto de anúncios no formato JSONPath para incluir as solicitações anteriores:
+
+curl \-F "access_token=___" \-F "name=batchapiexample" \-F "adbatch=[
+
+  {
+
+    'name': 'create-campaign',
+
+    'relative_url': 'act_123456/campaigns',
+
+    'body': 'name%3DTest+Campaign%26objective%3DLINK_CLICKS%26status%3DPAUSED%26buying_type%3DAUCTION',
+
+  },
+
+  {
+
+    'name': 'create-adset',
+
+    'relative_url': 'act_123456/adsets',
+
+    'body': 'targeting%3D%7B%22geo_locations%22%3A%7B%22countries%22%3A%5B%22US%22%5D%7D%7D%26daily_budget%3D5000%26campaign_id%3D%7Bresult%3Dcreate-campaign%3A%24.id%7D%26bid_amount%3D2%26name%3DFirst%2BAd%2BSet%20Test%26billing_event%3DLINK_CLICKS',
+
+  },
+
+]" \
+
+https://graph.facebook.com/<API_VERSION>/act_123456/async_batch_requests
+
+Para obter o status de um conjunto de solicitações:
+
+curl –G \-d "access_token=___" \-d "fields=<comma separated list of fields>" \"https://graph.facebook.com/v24.0/<REQUEST_SET_ID>"
+
+Isso retorna o status geral do conjunto de solicitações assíncronas como objetos JSON. Nem todos os campos são retornados por padrão. Para incluí-los, especifique fields, por exemplo, fields=id,owner_id,name,total_count,success_count,error_count,is_completed.
+
+NomeDescriçãoid
+
+tipo: int
+
+Exibido por padrão.
+
+O id do conjunto atual de solicitações assíncronas.
+
+owner_id
+
+tipo: int
+
+Exibido por padrão.
+
+O objeto ao qual pertence o conjunto de solicitações assíncronas. Se você criar anúncios, owner_id será a identificação da conta de anúncios.
+
+name
+
+tipo: cadeia de caracteres
+
+Exibido por padrão.
+
+O nome desse conjunto de solicitações assíncronas.
+
+is_completed
+
+tipo: booliano
+
+Exibido por padrão.
+
+Todas as solicitações assíncronas no conjunto foram concluídas.
+
+total_count
+
+tipo: int
+
+Não exibido por padrão.
+
+O total de solicitações nesse conjunto de solicitações.
+
+initial_count
+
+tipo: int
+
+Não exibido por padrão.
+
+O número de solicitações ainda não exibidas.
+
+in_progress_count
+
+tipo: int
+
+Não exibido por padrão.
+
+O número de solicitações em andamento.
+
+success_count
+
+tipo: int
+
+Não exibido por padrão.
+
+O número de solicitações concluídas com sucesso.
+
+error_count
+
+tipo: int
+
+Não exibido por padrão.
+
+O número de solicitações concluídas com falha.
+
+canceled_count
+
+tipo: int
+
+Não exibido por padrão.
+
+O número de solicitações canceladas pelo usuário.
+
+notification_uri
+
+tipo: cadeia de caracteres
+
+Não exibido por padrão.
+
+O URI de notificação desse conjunto de solicitações assíncronas.
+
+notification_mode
+
+tipo: cadeia de caracteres
+
+Não exibido por padrão.
+
+Os modos de recebimento de notificações. Valores válidos:
+
+OFF – sem notificações
+
+ON_COMPLETE – enviar notificação quando todo o conjunto for concluído
+
+notification_result
+
+tipo: cadeia de caracteres
+
+Não exibido por padrão.
+
+O resultado do envio da notificação.
+
+notification_status
+
+tipo: cadeia de caracteres
+
+Não exibido por padrão.
+
+Status da notificação: not_sent, sending ou sent.
+
+Depois de obter o status geral, verifique os detalhes de cada solicitação:
+
+curl –G \   -d "access_token=___" \-d "fields=<comma separated list of fields>" \"https://graph.facebook.com/v24.0/<REQUEST_SET_ID>/requests"
+
+Isso retorna detalhes como uma matriz JSON. Para incluir campos não padrão, especifique o campo em fields, como fields=id,scope_object_id,status,result,input,async_request_set.
+
+NomeDescriçãoid
+
+tipo: int
+
+Exibido por padrão.
+
+O ID da solicitação assíncrona.
+
+scope_object_id
+
+tipo: int
+
+Exibido por padrão.
+
+O ID principal do objeto criado pela solicitação. Se você criar anúncios, esta será a identificação do conjunto desse novo anúncio.
+
+status
+
+tipo: cadeia de caracteres
+
+Exibido por padrão.
+
+Status dessa solicitação assíncrona:
+
+Initial – não processado ainda.
+
+In_progress – solicitação em processamento.
+
+Success – solicitação concluída com sucesso
+
+Error – solicitação concluída com falha
+
+Canceled – solicitação cancelada pelo usuário
+
+result
+
+tipo: matriz
+
+Não exibido por padrão.
+
+Se a solicitação for concluída, o resultado é exibido. Para obter sucesso, o resultado é igual à API não assíncrona. Por exemplo, se você criar um anúncio, o resultado será uma nova identificação do anúncio. Em caso de erro:
+
+error_code – código de erro retornado
+
+error_message – mensagem de erro
+
+input
+
+tipo: objeto
+
+Não exibido por padrão.
+
+A entrada original dessa solicitação. Se você criar um anúncio, a entrada será adgroup_spec.
+
+async_request_set
+
+tipo: objeto
+
+Não exibido por padrão.
+
+O conjunto de solicitações assíncronas que contém essa solicitação.
+
+Listar solicitações da API em lote de uma conta de anúncios
+
+É possível criar diversos conjuntos de solicitações da API em lote. Para consultar todos os conjuntos de solicitações de uma conta de anúncios:
+
+curl –G \ -d "access_token=___" \"https://graph.facebook.com/v24.0/act_<AD_ACCOUNT_ID>/async_requests"
+
+
+
+ETags
+
+A API de Marketing é compatível com Etags. Isso ajuda você a saber se houve alteração nos dados consultados desde a última verificação. Como funciona:
+
+Quando você faz uma chamada, o cabeçalho da resposta inclui uma ETag cujo valor é o hash dos dados retornados na chamada de API. Salve o valor dessa ETag para uso na próxima etapa.
+
+Na próxima vez que você fizer essa chamada de API, inclua o cabeçalho da solicitação If-None-Match com o valor salvo da ETag.
+
+Se não houver alteração nos dados, o código de status da resposta será 304 – Not Modified e nenhum dado será retornado.
+
+Se os dados foram alterados desde a última consulta, eles serão retornados normalmente com uma nova ETag. Salve o novo valor da ETag para uso em chamadas futuras.
+
+As ETags ajudam a reduzir o tráfego de dados, mas o If-None-Match GET ainda deduz o limite de volume para seu aplicativo.
+
+A ETag é calculada usando toda a resposta da chamada de API, incluindo a formatação. O formato da resposta pode ser afetado pela cadeia de caracteres do agente do usuário. Por isso, mantenha o agente do usuário consistente entre chamadas feitas a partir do mesmo cliente.
+
+Exemplos de ETags
+
+Para verificar se houve alteração nas contas de anúncios do usuário.
+
+Etapa 1: determinar a ETag dos dados atuais
+
+curl -i "https://graph.beta.facebook.com/me/adaccounts?access_token=___"
+
+A resposta será a seguinte:
+
+HTTP/1.1 200 OKAccess-Control-Allow-Origin: *Cache-Control: private, no-cache, no-store, must-revalidateContent-Type: text/javascript; charset=UTF-8ETag: "7776cdb01f44354af8bfa4db0c56eebcb1378975"Expires: Sat, 01 Jan 2000 00:00:00 GMTPragma: no-cache
+
+X-FB-Rev: 495685
+
+X-FB-Server: 10.30.149.204
+
+X-FB-Debug: CWbHcogdwUE8saMv6ML+8FacXFrE8ufhjjwxU2dQWaA=
+
+X-Cnection: closeDate: Mon, 16 Jan 2012 12:07:44 GMTContent-Length: 3273{"data":[{"id":"act.......
+
+No exemplo, a ETag é "7776cdb01f44354af8bfa4db0c56eebcb1378975". Vale lembrar que esse valor inclui aspas (").
+
+Etapa 2: determinar se houve alterações nos dados
+
+curl -i -H "If-None-Match: \"7776cdb01f44354af8bfa4db0c56eebcb1378975\"" "https://graph.beta.facebook.com/me/adaccounts?access_token=___"
+
+Se não houver alteração, a resposta será a seguinte:
+
+HTTP/1.1 304 Not ModifiedAccess-Control-Allow-Origin: *Cache-Control: private, no-cache, no-store, must-revalidateContent-Type: text/javascript; charset=UTF-8Expires: Sat, 01 Jan 2000 00:00:00 GMTPragma: no-cache
+
+X-FB-Rev: 495685
+
+X-FB-Server: 10.30.177.190
+
+X-FB-Debug: ImBhat3k07Nez5FvuS2lPWU0U2xxmxD4B3k9ua4Sk7Q=
+
+X-Cnection: closeDate: Mon, 16 Jan 2012 12:09:17 GMTContent-Length: 0
+
+Observe a resposta 304 Not Modified. Se houvesse alteração nos dados, uma resposta normal de API teria sido retornada.
+
+Um exemplo de lote para verificar se houve alteração nos anúncios do usuário.
+
+Etapa 1: determinar a ETag dos dados atuais
+
+curl -i "curl -F 'access_token=___' -F 'batch=[ 
+
+  {"method":"GET", "relative_url": "?ids=6003356308839,6004164369439" }, 
+
+  {"method":"GET", "relative_url": "act_12345678/ads?campaign_ids=[6003356307839, 6004164259439]"}]'
+
+ https://graph.facebook.com"
+
+A resposta terá valores de ETag como no exemplo a seguir:
+
+...{"name":"ETag","value":"\"21d371640127490b2ed0387e8af3f0f8c9eff012\""}...      ...{"name":"ETag","value":"\"410e53bb257f116e8716e4ebcc76df1c567b87f4\""}...
+
+Neste exemplo, as ETags são "21d371640127490b2ed0387e8af3f0f8c9eff012" e "410e53bb257f116e8716e4ebcc76df1c567b87f4". Vale lembrar que esse valor inclui aspas (").
+
+Etapa 2: determinar se houve alterações nos dados
+
+curl -F 'access_token=___' -F 'batch=[
+
+  {"method":"GET", "headers":["If-None-Match: \"21d371640127490b2ed0387e8af3f0f8c9eff012\""], "relative_url": "?ids=6003356308839,6004164369439" },
+
+  {"method":"GET",  "headers":["If-None-Match: \"410e53bb257f116e8716e4ebcc76df1c567b87f4\""], "relative_url": "act_12345678/ads?campaign_ids=[6003356307839, 6004164259439]"}]' 
+
+https://graph.facebook.com
+
+Se não houver alteração, a resposta será a seguinte:
+
+[{
+
+    "code": 304,
+
+    .
+
+    .
+
+    .
+
+    "body": null},{
+
+    "code": 304,
+
+    .
+
+    .
+
+    .
+
+    "body": null}]
+
+Observe a resposta 304 Not Modified. Se houver alteração nos dados, retornaremos uma resposta normal de API.
+
+
+Graph API
+A versão mais recente é:
+
+v24.0
+A Graph API é a principal forma de os apps lerem e gravarem no gráfico social do Facebook. Todos os nossos SDKs e produtos interagem com a Graph API de algum modo, e nossas outras APIs são extensões dela. Por isso, é crucial entender como a Graph API funciona.
+
+Se você não conhece bem a Graph API, recomendamos começar por estes documentos:
+
+Visão geral: saiba como a Graph API está estruturada e como ela funciona.
+Introdução: explore os pontos de extremidade da Graph API com a ferramenta Explorador da Graph API e faça sua primeira solicitação.
+Solicitações em lote: saiba como enviar várias solicitações de API em uma única chamada.
+Solicitações de depuração: saiba como depurar solicitações de API.
+Como solucionar erros: saiba como lidar com erros comuns encontrados ao usar a Graph API.
+Field Expansion: saiba como limitar o número de objetos retornados em uma solicitação e realizar solicitações aninhadas.
+Secure Graph API Calls: saiba como fazer solicitações seguras à Graph API.
+API de Carregamento Retomável: saiba como carregar arquivos na Graph API.
+
+
+
+Visão geral
+A Graph API é a principal forma de inserir e retirar dados da plataforma do Facebook. Trata-se de uma API baseada em HTTP que os apps podem usar para consultar dados programaticamente, publicar novas histórias, gerenciar anúncios, carregar fotos e realizar uma ampla variedade de tarefas.
+
+A Graph API tem esse nome com base na ideia de um "gráfico social" — uma representação das informações no Facebook. O gráfico social é composto por nós, bordas e campos. Em geral, os nós são usados para a obtenção de dados sobre um objeto específico, as bordas são usadas para obter coleções de objetos sobre um objeto único e os campos para obter dados sobre um objeto único ou sobre cada objeto de uma coleção. Em nossa documentação, "ponto de extremidade" pode se referir a um nó ou a uma borda. Por exemplo: "Envie uma solicitação GET ao ponto de extremidade do usuário".
+
+HTTP
+Todas as transferências de dados estão em conformidade com o HTTP/1.1, e todos os pontos de extremidade exigem HTTPS. Como a Graph API se baseia em HTTP, ela funciona com qualquer linguagem que tenha uma biblioteca desse tipo, como cURL e urllib. Isso quer dizer que você pode usar a Graph API diretamente no seu navegador. Por exemplo, solicitar esta URL no seu navegador...
+
+https://graph.facebook.com/facebook/picture?redirect=false
+
+... é o mesmo que realizar esta solicitação cURL:
+
+curl -i -X GET "https://graph.facebook.com/facebook/picture?redirect=false"
+Também habilitamos a diretiva HSTS includeSubdomains no facebook.com, mas isso não deve afetar negativamente as suas chamadas da Graph API.
+
+URL de hospedagem
+Quase todas as solicitações são enviadas à URL de hospedagem graph.facebook.com. A única exceção são os carregamentos de vídeo, que usam o graph-video.facebook.com.
+
+Tokens de acesso
+Os tokens de acesso permitem que o seu app acesse a Graph API. Todos os pontos de extremidade da Graph API exigem algum tipo de token de acesso. Por isso, sempre que você acessar um ponto de extremidade, a solicitação deverá conter essa informação. Normalmente, eles desempenham duas funções:
+
+Permitem que o seu app acesse as informações de um usuário sem exigir a senha dele. Por exemplo, o seu app precisa do email do usuário para executar uma função. Se permitir que o seu app recupere o endereço de email do Facebook, o usuário não precisará inserir a própria senha para que o app obtenha o email.
+Permitem que identifiquemos o seu app, o usuário e os dados que podem ser acessados.
+Visite a documentação do token de acesso para saber mais.
+
+Nós
+Um nó é um objeto individual com um ID único. Por exemplo, existem vários objetos de nós de usuário, cada um com um ID único representando uma pessoa no Facebook. Páginas, Grupos, Publicações, Fotos e Comentários são apenas alguns dos nós do gráfico social do Facebook.
+
+O exemplo cURL a seguir representa uma chamada ao nó do usuário.
+
+curl -i -X GET \
+  "https://graph.facebook.com/USER-ID?access_token=ACCESS-TOKEN"
+Por padrão, essa solicitação retorna os seguintes dados formatados usando JSON:
+
+{
+  "name": "Your Name",
+  "id": "YOUR-USER-ID"
+}
+Metadados de nó
+É possível obter uma lista de todos os campos de um objeto de nó (como usuário, página ou foto), incluindo o nome, a descrição e o tipo de dado do campo. Envie uma solicitação GET para um ID de objeto e inclua o parâmetro metadata=1:
+
+curl -i -X GET \
+  "https://graph.facebook.com/USER-ID?
+    metadata=1&access_token=ACCESS-TOKEN"
+A resposta JSON incluirá a propriedade metadata, que lista todos os campos compatíveis para o nó específico:
+
+{
+  "name": "Jane Smith",
+  "metadata": {
+    "fields": [
+      {
+        "name": "id",
+        "description": "The app user's App-Scoped User ID. This ID is unique to the app and cannot be used by other apps.",
+        "type": "numeric string"
+      },
+      {
+        "name": "age_range",
+        "description": "The age segment for this person expressed as a minimum and maximum age. For example, more than 18, less than 21.",
+        "type": "agerange"
+      },
+      {
+        "name": "birthday",
+        "description": "The person's birthday.  This is a fixed format string, like `MM/DD/YYYY`.  However, people can control who can see the year they were born separately from the month and day so this string can be only the year (YYYY) or the month + day (MM/DD)",
+        "type": "string"
+      },
+...
+/me
+O nó /me é um ponto de extremidade especial que se traduz no ID do objeto da pessoa ou Página cujo token de acesso está sendo usado para fazer as chamadas à API. Se você tiver um token de acesso do usuário, poderá recuperar o nome e a ID desse usuário ao usar o seguinte:
+
+curl -i -X GET \
+  "https://graph.facebook.com/me?access_token=ACCESS-TOKEN"
+Bordas
+Uma borda é uma conexão entre dois nós. Por exemplo, um nó de usuário pode estar conectado a fotos, e um nó de foto pode estar conectado a comentários. O exemplo cURL a seguir retornará uma lista das fotos publicadas por uma pessoa no Facebook.
+
+curl -i -X GET \
+  "https://graph.facebook.com/USER-ID/photos?access_token=ACCESS-TOKEN"
+Cada ID retornada representa um nó de foto e quando ela foi carregada no Facebook.
+
+    {
+  "data": [
+    {
+      "created_time": "2017-06-06T18:04:10+0000",
+      "id": "1353272134728652"
+    },
+    {
+      "created_time": "2017-06-06T18:01:13+0000",
+      "id": "1353269908062208"
+    }
+  ],
+}
+Campos
+Os campos são propriedades dos nós. Ao consultar um nó ou uma borda, um conjunto de campos será retornado por padrão, conforme os exemplos acima. No entanto, é possível especificar que campos você deseja retornar usando o parâmetro fields e listando cada campo. Isso substitui os padrões e retorna somente os campos especificados, além do ID do objeto, que sempre é retornado.
+
+A solicitação cURL a seguir inclui o parâmetro fields e o nome, o email e a foto de perfil do usuário.
+
+curl -i -X GET \
+  "https://graph.facebook.com/USER-ID?fields=id,name,email,picture&access_token=ACCESS-TOKEN"
+Dados retornados
+{
+  "id": "USER-ID",
+  "name": "EXAMPLE NAME",
+  "email": "EXAMPLE@EMAIL.COM",
+  "picture": {
+    "data": {
+      "height": 50,
+      "is_silhouette": false,
+      "url": "URL-FOR-USER-PROFILE-PICTURE",
+      "width": 50
+    }
+  }
+}
+Parâmetros complexos
+A maioria dos tipos de parâmetro é primitivo direto, como bool, string e int, mas também há os tipos list e object, que podem ser especificados na solicitação.
+
+O tipo list é especificado em sintaxe JSON, por exemplo: ["firstitem", "seconditem", "thirditem"]
+
+O tipo object também é especificado em sintaxe JSON, por exemplo: {"firstkey": "firstvalue", "secondKey": 123}
+
+Como publicar, atualizar e excluir
+Acesse o guia de compartilhamento do Facebook para saber como publicar no Facebook de um usuário ou consulte a documentação da API de Páginas para publicar no feed do Facebook de uma página.
+
+Alguns nós permitem que você atualize campos com operações POST. Por exemplo, você pode atualizar o campo email da seguinte maneira:
+
+curl -i -X POST \
+  "https://graph.facebook.com/USER-ID?email=YOURNEW@EMAILADDRESS.COM&access_token=ACCESS-TOKEN"
+Read-After-Write
+Para criar e atualizar pontos de extremidade, a Graph API pode ler imediatamente um objeto publicado ou atualizado com sucesso e retornar campos compatíveis pelo ponto de extremidade de leitura correspondente.
+
+Por padrão, uma ID do objeto criado ou atualizado será retornada. Para incluir mais informações na resposta, inclua o parâmetro fields na sua solicitação e liste os campos que deseja retornar. Por exemplo, para publicar a mensagem “Olá” no feed de uma página, você pode fazer a seguinte solicitação:
+
+curl -i - X POST "https://graph.facebook.com/PAGE-ID/feed?message=Hello&
+  fields=created_time,from,id,message&access_token=ACCESS-TOKEN"
+O exemplo de código acima foi formatado para facilitar a leitura.
+Isso retornaria os campos especificados como uma resposta formatada em JSON, por exemplo:
+
+{
+  "created_time": "2017-04-06T22:04:21+0000",
+  "from": {
+    "name": "My Facebook Page",
+    "id": "PAGE-ID"
+  },
+  "id": "POST_ID",
+  "message": "Hello",
+}
+Consulte a documentação de referência de cada ponto de extremidade para ver se ele é compatível com read-after-write e quais campos estão disponíveis.
+
+Erros
+Se houver falha na leitura por qualquer motivo (por exemplo, caso um campo inexistente seja solicitado), a Graph API enviará uma resposta-padrão de erro. Acesse o guia Como lidar com erros para obter mais informações.
+
+Normalmente, é possível excluir um nó (por exemplo, de publicação ou de foto) executando uma operação DELETE na identificação do objeto:
+
+curl -i -X DELETE \
+  "https://graph.facebook.com/PHOTO-ID?access_token=ACCESSS-TOKEN"
+Normalmente, só é possível excluir nós criados por você, mas verifique o guia de referência de cada nó para ver os requisitos das operações de exclusão.
+
+Webhooks
+Ao assinar webhooks, você recebe notificações sobre alterações ou interações com os nós. Consulte Webhooks da Meta.
+
+Versões
+A Graph API tem diversas versões com lançamentos trimestrais. Você pode especificar a versão nas chamadas. Para isso, inclua "v" e o número da versão no início do caminho da solicitação. Por exemplo, confira uma chamada à versão 4.0:
+
+curl -i -X GET \
+  "https://graph.facebook.com/v4.0/USER-ID/photos
+    ?access_token=ACCESS-TOKEN"
+Se você não informar um número de versão, usaremos como padrão a versão mais antiga disponível, portanto, é recomendável incluir o número da versão nas suas solicitações.
+
+Leia mais sobre as versões no guia de controle de versão e saiba mais sobre todas as versões disponíveis no registro de alterações da Graph API.
+
+APIs, SDKs e plataformas do Facebook
+Conecte interfaces e desenvolva em várias plataformas com as APIs, os SDKs e as plataformas do Facebook.
+
+Resultados paginados
+Abordamos as noções básicas de terminologia e estrutura da Graph API na visão geral da Graph API. Este documento fornece mais informações sobre as solicitações de API.
+
+Como percorrer os resultados paginados
+Ao fazer uma solicitação à API para um nó ou uma borda, normalmente você não recebe todos os resultados dessa solicitação em uma única resposta. Isso ocorre por que algumas respostas podem conter milhares de objetos. Portanto, a maioria das respostas é paginada por padrão.
+
+Paginação com base no cursor
+A paginação com base no cursor é a forma mais eficiente de paginação e deve ser usada sempre que possível. Um cursor se refere a uma string aleatória que marca um item específico em uma lista de dados. O cursor sempre apontará para o item, mas será invalidado caso ele seja removido ou excluído. Portanto, seu aplicativo não deve armazenar cursores nem supor que eles ainda serão válidos no futuro.
+
+Ao ler uma borda compatível com a paginação por cursor, você verá a seguinte resposta JSON:
+
+{
+  "data": [
+     ... Endpoint data is here
+  ],
+  "paging": {
+    "cursors": {
+      "after": "MTAxNTExOTQ1MjAwNzI5NDE=",
+      "before": "NDMyNzQyODI3OTQw"
+    },
+    "previous": "https://graph.facebook.com/{your-user-id}/albums?limit=25&before=NDMyNzQyODI3OTQw"
+    "next": "https://graph.facebook.com/{your-user-id}/albums?limit=25&after=MTAxNTExOTQ1MjAwNzI5NDE="
+  }
+}
+Uma borda paginada por cursor aceita os seguintes parâmetros:
+
+before: o cursor que aponta para o início da página de dados retornados.
+after: o cursor que aponta para o fim da página de dados retornados.
+limit: o número máximo de objetos que podem ser retornados. Uma consulta pode retornar menos que o valor do limit devido à filtragem. Não conte com um número de resultados menor que o valor de limit para determinar que a sua consulta chegou ao fim da lista de dados. Em vez disso, use como base a ausência de next, conforme descrito abaixo. Por exemplo, se você definir o limit como 10, e 9 resultados forem retornados, poderá haver mais dados disponíveis, mas um item foi removido devido à filtragem de privacidade. Além disso, algumas bordas podem ter um valor máximo de limit por motivos de desempenho. Em todos os casos, a API retornará os links de paginação corretos.
+next: o ponto de extremidade da Graph API que retornará a próxima página de dados. Se não for incluído, esta será a última página de dados. Devido à forma como a paginação funciona em termos de visibilidade e privacidade, é possível que uma página esteja vazia, mas contenha um link de paginação next. Interrompa a paginação quando o link next não aparecer mais.
+previous: o ponto de extremidade da Graph API que retornará a página de dados anterior. Se não for incluído, esta será a primeira página de dados.
+Não armazene cursores. Os cursores podem se tornar inválidos rapidamente se itens forem adicionados ou excluídos.
+
+Paginação com base no tempo
+A paginação por tempo é usada para navegar pelos dados dos resultados usando registros de data e hora do Unix, que apontam para horários específicos em uma lista de dados.
+
+Ao usar um ponto de extremidade que usa a paginação com base no tempo, você verá a seguinte resposta JSON:
+
+{
+  "data": [
+     ... Endpoint data is here
+  ],
+  "paging": {
+    "previous": "https://graph.facebook.com/{your-user-id}/feed?limit=25&since=1364849754",
+    "next": "https://graph.facebook.com/{your-user-id}/feed?limit=25&until=1364587774"
+  }
+}
+Uma borda com paginação por tempo aceita os seguintes parâmetros:
+
+until: um registro de data e hora do Unix ou um valor de dados strtotime que aponta para o final do intervalo de dados baseados no tempo.
+since: um registro de data e hora do Unix ou um valor de dados strtotime que aponta para o início do intervalo de dados baseados no tempo.
+limit: o número máximo de objetos que podem ser retornados. Uma consulta pode retornar menos que o valor do limit devido à filtragem. Não conte com um número de resultados menor que o valor de limit para determinar que a sua consulta chegou ao fim da lista de dados. Em vez disso, use como base a ausência de next, conforme descrito abaixo. Por exemplo, se você definir o limit como 10, e 9 resultados forem retornados, poderá haver mais dados disponíveis, mas um item foi removido devido à filtragem de privacidade. Além disso, algumas bordas podem ter um valor máximo de limit por motivos de desempenho. Em todos os casos, a API retornará os links de paginação corretos.
+next: o ponto de extremidade da Graph API que retornará a próxima página de dados.
+previous: o ponto de extremidade da Graph API que retornará a página de dados anterior.
+Para obter resultados consistentes, especifique os parâmetros since e until. Além disso, é recomendável que o intervalo de tempo seja de no máximo 6 meses.
+
+Paginação com base no deslocamento
+A paginação por deslocamento pode ser usada quando a cronologia não for importante e você quiser retornar apenas um número específico de objetos. Use essa opção somente se a borda não for compatível com a paginação com base no cursor ou no tempo.
+
+Uma borda com paginação por deslocamento aceita os seguintes parâmetros:
+
+offset: esse parâmetro desloca o início de cada página de acordo com o número especificado.
+limit: o número máximo de objetos que podem ser retornados. Uma consulta pode retornar menos que o valor do limit devido à filtragem. Não conte com um número de resultados menor que o valor de limit para determinar que a sua consulta chegou ao fim da lista de dados. Em vez disso, use como base a ausência de next, conforme descrito abaixo. Por exemplo, se você definir o limit como 10, e 9 resultados forem retornados, poderá haver mais dados disponíveis, mas um item foi removido devido à filtragem de privacidade. Além disso, algumas bordas podem ter um valor máximo de limit por motivos de desempenho. Em todos os casos, a API retornará os links de paginação corretos.
+next: o ponto de extremidade da Graph API que retornará a próxima página de dados. Se não for incluído, esta será a última página de dados. Devido à forma como a paginação funciona em termos de visibilidade e privacidade, é possível que uma página esteja vazia, mas contenha um link de paginação next. Interrompa a paginação quando o link next não aparecer mais.
+previous: o ponto de extremidade da Graph API que retornará a página de dados anterior. Se não for incluído, esta será a primeira página de dados.
+Observe que, se novos objetos forem adicionados à lista de itens paginados, isso mudará o conteúdo de cada página baseada em deslocamento.
+
+A paginação com base no deslocamento não é compatível com todas as chamadas à API. Para obter resultados consistentes, recomendamos fazer a paginação usando os links Voltar/Avançar retornados na resposta.
+
+Você poderá encontrar limites ao fazer a paginação de objetos com diversos itens retornados, como comentários, que podem somar dezenas de milhares. A API retornará um erro quando seu aplicativo atingir o limite do cursor:
+
+{
+  "error": {
+    "message": "(#100) The After Cursor specified exceeds the max limit supported by this endpoint",
+    "type": "OAuthException",
+    "code": 100
+  }
+}
+
+
+
+Meta Developer Site Status, Support, and Tools
+Get the status of the Meta Developer Platform APIs, explore available Meta Developer Tools, and find Support.
+
+At the top of all pages on Meta's Developer Documentation site, the following tabs are available:
+
+Apps – The Meta App Dashboard to configure your app with Meta's APIs, products, and SDKs
+Docs – The documentation for implementing Meta's APIs, products, and SDKs
+Required actions – The required actions needed for your app to retain access to Meta's APIs
+Support – The support resources to ask questions, report bugs, and monitor platform status
+Tools – The tools for testing, debugging, and previewing during development
+Apps
+The App Dashboard allows you to configure settings that may be required by the use cases, APIs, and SDKs that your app will use. It displays basic information about all apps for which you have a role and allows you to configure your app with Meta's APIs, products, and SDKs. The dashboard allows you to:
+
+Create and manage your app's name and Meta ID
+View the business connected to an app, if any
+View the role you have on an app
+View the published status of an app
+View and access the required actions for an app
+Create a test app for an existing app
+Remove yourself from an app
+Archive or delete apps you own
+Click Apps at the top of the page to access the App Dashboard.
+
+Docs
+Read the Meta Developer Documentation to learn the basics of how to send and receive data from the Meta social graph and how to implement the APIs, platforms, products, and SDKs to fit your application needs.
+
+Click Docs at the top of the page to access the landing page for all available developer documentation.
+
+Required actions
+View the actions you are required to perform for all apps you own or administer to retain access to Meta's servers, such as Data Use Checkup. You can filter actions by app name, status, and business portfolio.
+
+Click Required actions at the top of the page to view any actions you need to take.
+
+Support
+View platform health, report and view bugs, and get help with issues you encounter while developing with Meta.
+
+Click Support at the top of the page to get support or view platform status.
+
+Support
+If the platform status is reporting no issues but you are experiencing a problem, report and monitor bugs that are affecting you. Get help with Engineering, Business and Ads Management, App Compliance, and your Personal Account, and search for a topic, view trending bug reports, and trending developer documentation.
+
+Bugs
+View current bug reports, search bug reports, and file a bug report.
+
+Community
+Visit Meta's Developer Community Forum to ask, answer, and review questions from fellow developers.
+
+FAQ
+Visit Meta's Frequently Asked Questions (FAQs) to find answers to common questions.
+
+Platform Status
+Meta provides a health status page for each of the following:
+
+Business tools – Ads Manager, Catalog, Shops, and more
+Developer platform – Facebook Login, ads APIs, business messaging APIs, and more
+Transparency tools – Ads and Data transparency tools
+Each status page allows you to view the current health of a product, tool, or API.
+
+A checkmark within a green circle – The service is operational with no known issues
+An exclamation within a yellow triangle – The service is recovering from disruptions or is experiencing partial disruptions
+A dash within a red stop sign – The service is currently down or experiencing major disruptions
+Click the chevron to the right of an API or product to view more information.
+
+View History
+Click the View History button at the bottom of the page to see any issues that have occurred in the last 90 days. This allows you to see when an issue occurred, its duration, and status.
+
+RSS Feed
+Click the RSS Feed button at the bottom of the page to sign up for real-time status notifications for each platform or tool you care about.
+
+Business messaging status
+Get additional information for business messaging APIs, including current and historical data for availability and latency.
+
+Availability
+The availability of an API or tool is shown as a percentage and is calculated by subtracting the downtime, in minutes, from the measured time period, in minutes, divided by the measured time period, in minutes then multiplied by 100.
+
+Percent availability
+
+=
+
+( Total minutes - Number of minutes the issue occurred ) / Total minutes
+
+X
+
+100
+
+
+For example, if the time period is 30 days (43200 minutes) and an issue occurred for 23 hours (1380 minutes) during those 30 days, the API was available for 96.81% of the time during those 30 days.
+
+96.81% = ( 43200 - 1380 ) / 43200 X 100
+
+Latency
+Latency is calculated for inbound and outbound messages.
+
+Inbound – Time from when a message is received from a user to when Meta makes the first attempt to send a corresponding message webhook to the business’s callback URL
+Outbound – Time from when Meta receives a send message request from a business to when the message is ready to be transmitted to the user
+Latency Percentiles
+The status page displays P90 and P99 latency percentiles:
+
+P90 – 90% of requests are faster than this value
+P99 – 99% of requests are faster than this value; only 1% are slower
+Tools
+Use the various developer tools from Meta to test, debug, and upgrade the various APIs, products, and SDKs. Meta Developer tools include:
+
+The Graph API Explorer – Create, test, and authenticate API calls and get code
+Sharing Debugger – Preview how content will look when it's shared to Facebook
+Access Token Debugger – View details about access tokens, such as scope, type, and expiry
+This page also has links to business tools such as:
+
+The Ads Manager – Create, preview, and publish ad campaigns
+The Business Manager – View and manage your business portfolios and assets
+The Monetization Manager – View your ads' performance for each business portfolio
+
+
+
+Solicitações de depuração
+Modo de depuração da Graph API
+Quando o modo de depuração estiver ativado, a resposta da Graph API pode conter campos adicionais que explicam possíveis problemas na solicitação.
+
+Para habilitar o modo de depuração, use o parâmetro de string de consulta debug. Por exemplo:
+
+cURLAndroid SDKObjective-CJava SDKPHP SDK
+curl -i -X GET \
+  "https://graph.facebook.com/{user-id}
+    ?fields=friends
+    &debug=all
+    &access_token={your-access-token}"
+Se a permissão user_friends não tiver sido concedida, esta resposta será gerada:
+
+{
+  "data": [
+  ], 
+  "__debug__": {
+    "messages": [
+      {
+        "message": "Field friends is only accessible on User object, if user_friends permission is granted by the user", 
+        "type": "warning"
+      }, 
+      {
+        "link": "https://developers.facebook.com/docs/apps/changelog#v2_0", 
+        "message": "Only friends who have installed the app are returned in versions greater or equal to v2.0.", 
+        "type": "info"
+      }
+    ]
+  }
+}
+O valor do parâmetro debug pode ser definido como "all" ou como o nível mínimo de gravidade solicitado que corresponda ao type da mensagem:
+
+Valor do parâmetro de depuração	O que será retornado
+all
+
+Todas as mensagens de depuração disponíveis.
+
+info
+
+As mensagens de depuração com os tipos info e warning.
+
+warning
+
+Somente mensagens de depuração com o tipo warning.
+
+As informações de depuração, quando disponíveis, são retornadas como objetos JSON sob a chave __debug__ na matriz messages. Todos os elementos dessa matriz são objetos JSON com os campos a seguir:
+
+Campo	Tipo de dado	Descrição
+message
+
+String
+
+A mensagem.
+
+type
+
+String
+
+A gravidade da mensagem.
+
+link
+
+String
+
+Uma URL apontando as informações relacionadas (opcional).
+
+Também é possível usar modo de depuração com o Explorador da Graph API.
+
+Determinar a versão usada nas solicitações de API
+Ao criar um app e fazer solicitações da Graph API, é útil saber qual versão da API está enviando as respostas. Por exemplo, caso esteja fazendo chamadas sem uma versão especificada, talvez você não saiba qual a versão de API que está respondendo.
+
+A Graph API fornece um cabeçalho de solicitação chamado facebook-api-version em todas as respostas que indica a versão exata da API que as gerou. Por exemplo, uma chamada da Graph API que gera uma solicitação na versão 2.0 produz o seguinte cabeçalho HTTP:
+
+facebook-api-version:v2.0
+Esse cabeçalho facebook-api-version permite que você determine se as chamadas de API estão sendo retornadas pela versão esperada.
+
+Informações de depuração para relato de erros
+Ao relatar um erro na Graph API, incluímos cabeçalhos de solicitação adicionais. Eles são enviados com o relatório para facilitar a identificação e a reprodução do problema. Os cabeçalhos da solicitação são X-FB-Debug, x-fb-rev e X-FB-Trace-ID.
+
+
+Como solucionar erros
+As solicitações feitas à nossas APIs podem resultar em diferentes respostas de erro. O documento a seguir descreve táticas de recuperação e exibe uma lista de valores de erro com um mapa para o método de resolução mais comum.
+
+Respostas de erro
+Veja a seguir uma resposta de erro comum resultante de uma solicitação de API malsucedida:
+
+{
+  "error": {
+    "message": "Message describing the error", 
+    "type": "OAuthException", 
+    "code": 190,
+    "error_subcode": 460,
+    "error_user_title": "A title",
+    "error_user_msg": "A message",
+    "fbtrace_id": "EJplcsCHuLu"
+  }
+}
+message: é uma descrição do erro legível por humanos.
+code: é o código do erro. Os valores comuns estão listados abaixo, juntamente com táticas comuns de recuperação.
+error_subcode: são informações adicionais sobre o erro. Os valores comuns estão listados abaixo.
+error_user_msg: é a mensagem que será exibida ao usuário. O idioma da mensagem é baseado no local da solicitação da API.
+error_user_title: é o título do diálogo, se exibido. O idioma da mensagem é baseado no local da solicitação da API.
+fbtrace_id: é o identificador de suporte interno. Ao relatar um bug relacionado a uma chamada da Graph API, inclua o fbtrace_id para nos ajudar a encontrar os dados de registro para depuração. No entanto, esse ID expirará em breve. Para ajudar a equipe de suporte a replicar o problema, anexe uma sessão salva do Explorador da Graph API.
+Códigos de erro
+Código ou tipo	Nome	O que fazer
+OAuthException
+
+Se não houver um subcódigo, isso indica que o status de login ou o token de acesso expirou, foi revogado ou é inválido. Obtenha um novo token de acesso.
+
+Se houver um subcódigo, consulte-o.
+
+102
+
+Sessão da API
+
+Se não houver um subcódigo, isso indica que o status de login ou o token de acesso expirou, foi revogado ou é inválido. Obtenha um novo token de acesso.
+
+Se houver um subcódigo, consulte-o.
+
+1
+
+API desconhecida
+
+Possivelmente, um problema temporário devido à inatividade. Aguarde um pouco e refaça a operação. Caso isso ocorra outra vez, verifique se você está solicitando uma API existente.
+
+2
+
+Serviço de API
+
+Um problema temporário devido à inatividade. Aguarde um pouco e refaça a operação.
+
+3
+
+Método de API
+
+Indica um problema que envolve recursos ou permissões. Confira se o app tem as permissões ou os recursos necessários para fazer a chamada.
+
+4
+
+Muitas chamadas de API
+
+Um problema temporário devido à limitação. Aguarde um pouco e refaça a operação ou verifique o volume de solicitações de API.
+
+17
+
+Muitas chamadas de usuário de API
+
+Um problema temporário devido à limitação. Aguarde um pouco e refaça a operação ou verifique o volume de solicitações de API.
+
+10
+
+Permissão de API negada
+
+A permissão não foi concedida ou foi removida. Veja como corrigir permissões ausentes.
+
+190
+
+O token de acesso expirou
+
+Obtenha um novo token de acesso.
+
+200-299
+
+Permissão da API (Múltiplos valores dependendo da permissão)
+
+A permissão não foi concedida ou foi removida. Veja como corrigir permissões ausentes.
+
+341
+
+Limite do aplicativo atingido
+
+Um problema temporário devido ao tempo de inatividade ou à limitação. Aguarde um pouco e refaça a operação ou verifique o volume de solicitações de API.
+
+368
+
+Bloqueado temporariamente por violações de políticas
+
+Aguarde um pouco e refaça a operação.
+
+506
+
+Publicação duplicada
+
+Publicações duplicadas não podem ser publicadas consecutivamente. Altere o conteúdo da publicação e tente novamente.
+
+1609005
+
+Erro ao publicar o link
+
+Houve um problema ao detalhar os dados do link fornecido. Verifique a URL e tente novamente.
+
+Subcódigos de erro de autenticação
+Código	Nome	O que fazer
+458
+
+App não instalado
+
+O usuário não fez login no seu app. Autentique o usuário novamente.
+
+459
+
+Usuário em checkpoint
+
+O usuário precisa entrar em https://www.facebook.com ou https://m.facebook.com para corrigir um problema.
+
+460
+
+Senha alterada
+
+No iOS 6 e nas versões mais recentes, caso a pessoa use o fluxo integrado do sistema operacional para fazer login, direcione-a aos ajustes de sistema operacional do Facebook no dispositivo para que ela atualize a senha. Caso contrário, ela precisará fazer login no app novamente.
+
+463
+
+Expirado
+
+O status do login ou o token de acesso expirou, foi revogado ou está inválido de outra forma. Veja como corrigir tokens de acesso expirados.
+
+464
+
+Usuário não confirmado
+
+O usuário precisa entrar em https://www.facebook.com ou https://m.facebook.com para corrigir um problema.
+
+467
+
+Token de acesso inválido
+
+O token de acesso expirou, foi revogado ou está inválido de outra forma. Veja como corrigir tokens de acesso expirados.
+
+492
+
+Sessão inválida
+
+O usuário associado ao token de acesso à Página não possui uma função apropriada na Página.
+
+Códigos de erro de limitação de volume
+Acesse o guia sobre limites de volume da Graph API para saber mais sobre os códigos de erro de limitação de volume.
+
+
+
+

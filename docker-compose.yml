@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  meta_etl_worker:
+    image: ${DOCKER_USERNAME}/etl-meta-ads:latest
+    build: .
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == worker
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+        reservations:
+          cpus: "0.25"
+          memory: 256M
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+      update_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: rollback
+    environment:
+      - DB_HOST=${DB_HOST:-haproxy}
+      - DB_PORT=${DB_PORT:-5432}
+      - DB_NAME=${DB_NAME:-relatorio_meta_ads}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - META_ACCESS_TOKEN=${META_ACCESS_TOKEN}
+      - AD_ACCOUNTS=${AD_ACCOUNTS}
+    networks:
+      - internal_network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    labels:
+      - "com.docker.stack.namespace=etl"
+      - "com.docker.service.name=meta-etl"
+
+networks:
+  internal_network:
+    external: true
