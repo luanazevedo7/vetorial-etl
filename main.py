@@ -78,8 +78,8 @@ def fetch_meta_data(account_id, since, until):
         "inline_link_clicks",
         "actions",
         "action_values",
-        "video_p50_watched_actions",
-        "video_p75_watched_actions",
+        # "video_p50_watched_actions",
+        # "video_p75_watched_actions",
     ]
 
     params = {
