@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   meta_etl_worker:
-    image: covillabs/etl-meta-ads:v3
+    image: covillabs/etl-meta-ads:v5
     # O comando 'tty: true' ajuda a manter o container vivo em alguns ambientes
     tty: true
     deploy:
