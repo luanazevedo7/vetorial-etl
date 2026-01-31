@@ -8,7 +8,7 @@ Antes de fazer o deploy, certifique-se de ter:
 - [ ] Meta Ads Access Token válido
 - [ ] IDs das contas de anúncios (formato: `act_123456789`)
 - [ ] Docker Swarm inicializado
-- [ ] Rede `internal_network` criada no Swarm
+- [ ] Rede `network_public` criada no Swarm
 - [ ] Acesso ao Docker Hub (ou registry privado)
 
 ## 🗄️ Passo 1: Preparar Banco de Dados
@@ -30,12 +30,12 @@ CREATE DATABASE relatorio_meta_ads;
 **Opção A: Via psql (linha de comando)**
 
 ```bash
-psql -h haproxy -U postgres -d relatorio_meta_ads -f schema.sql
+psql -h patroni-primary -U postgres -d relatorio_meta_ads -f schema.sql
 ```
 
 **Opção B: Via DBeaver/pgAdmin**
 
-1. Conecte-se ao servidor (HAProxy:5432)
+1. Conecte-se ao servidor (patroni-primary:5432)
 2. Abra/copie o conteúdo de `schema.sql`
 3. Execute o script
 
@@ -114,7 +114,7 @@ nano .env
 Conteúdo do `.env`:
 
 ```env
-DB_HOST=haproxy
+DB_HOST=patroni-primary
 DB_PORT=5432
 DB_NAME=relatorio_meta_ads
 DB_USER=postgres
@@ -160,13 +160,13 @@ CONTA: act_123456789
 
 ```bash
 # Build
-docker build -t seu-usuario/etl-meta-ads:latest .
+docker build -t seu-usuario/etl-meta-ads:v3 .
 
 # Login no Docker Hub
 docker login
 
 # Push
-docker push seu-usuario/etl-meta-ads:latest
+docker push seu-usuario/etl-meta-ads:v3
 ```
 
 ### 5.2 Build via GitHub Actions (Recomendado)
@@ -192,7 +192,7 @@ git push origin main
 ### 6.1 Criar Network (se não existir)
 
 ```bash
-docker network create --driver overlay internal_network
+docker network create --driver overlay network_public
 ```
 
 ### 6.2 Deploy da Stack
@@ -240,7 +240,7 @@ JOB FINALIZADO - Aguardando próximo ciclo
 
 ```sql
 -- Conecte ao PostgreSQL
-psql -h haproxy -U postgres -d relatorio_meta_ads
+psql -h patroni-primary -U postgres -d relatorio_meta_ads
 
 -- Validar inserção
 SELECT
@@ -266,7 +266,7 @@ GROUP BY account_id;
 
 ```bash
 # Após push de nova versão no GitHub
-docker service update --image seu-usuario/etl-meta-ads:latest etl-meta_meta_etl_worker
+docker service update --image seu-usuario/etl-meta-ads:v3 etl-meta_meta_etl_worker
 
 # Ou forçar re-pull
 docker service update --force etl-meta_meta_etl_worker

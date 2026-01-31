@@ -63,12 +63,12 @@ etl-vetorial/
 Execute o schema SQL no PostgreSQL antes do primeiro deploy:
 
 ```bash
-psql -h haproxy -U postgres -d relatorio_meta_ads -f schema.sql
+psql -h patroni-primary -U postgres -d relatorio_meta_ads -f schema.sql
 ```
 
 **Ou via DBeaver/pgAdmin:**
 
-1. Conecte-se ao PostgreSQL via HAProxy
+1. Conecte-se ao PostgreSQL via patroni-primary
 2. Abra o arquivo `schema.sql`
 3. Execute o script
 
@@ -83,7 +83,7 @@ cp .env.example .env
 2. Edite o `.env` com suas credenciais:
 
 ```env
-DB_HOST=haproxy
+DB_HOST=patroni-primary
 DB_PORT=5432
 DB_NAME=relatorio_meta_ads
 DB_USER=seu_usuario
@@ -111,10 +111,10 @@ Isso mostrará todos os eventos disponíveis. Ajuste o mapeamento em `main.py` s
 
 ```bash
 # Build da imagem
-docker build -t seu-usuario/etl-meta-ads:latest .
+docker build -t seu-usuario/etl-meta-ads:v3 .
 
 # Push para Docker Hub
-docker push seu-usuario/etl-meta-ads:latest
+docker push seu-usuario/etl-meta-ads:v3
 
 # Deploy no Swarm
 docker stack deploy -c docker-compose.yml etl-meta
@@ -212,7 +212,7 @@ Rate limit - App: 45% | Account: 23%
 **Solução**:
 
 ```bash
-psql -h haproxy -U postgres -d relatorio_meta_ads -f schema.sql
+psql -h patroni-primary -U postgres -d relatorio_meta_ads -f schema.sql
 ```
 
 ## 📈 Performance
@@ -250,7 +250,7 @@ git push origin main
 # A GitHub Action fará o build automático
 
 # Atualize o serviço no Swarm
-docker service update --image seu-usuario/etl-meta-ads:latest etl-meta_meta_etl_worker
+docker service update --image seu-usuario/etl-meta-ads:v3 etl-meta_meta_etl_worker
 ```
 
 ## 🤝 Contribuindo
