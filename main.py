@@ -60,8 +60,6 @@ def fetch_meta_data(account_id, since, until):
 
     url = f"{BASE_URL}/{clean_id}/insights"
 
-    # ⚠️ REMOVI action_values TEMPORARIAMENTE POIS ELE COSTUMA DAR CONFLITO COM BREAKDOWNS
-    # Se funcionar sem ele, sabemos que ele era o culpado.
     fields = [
         "campaign_id",
         "campaign_name",
@@ -85,34 +83,70 @@ def fetch_meta_data(account_id, since, until):
         "time_increment": 1,
         "fields": ",".join(fields),
         "breakdowns": "publisher_platform,platform_position",
-        "limit": 100,
+        "limit": 50,  # Reduzi para 50 para evitar Timeout da Meta em queries pesadas
     }
 
     all_data = []
+    page_count = 0  # Contador de páginas
 
     while True:
         try:
-            response = requests.get(url, params=params)
+            page_count += 1
+            if page_count % 5 == 0:  # Avisa a cada 5 páginas para não poluir demais
+                logger.info(
+                    f"   ⏳ Baixando página {page_count} da conta {clean_id}..."
+                )
 
-            # Log de erro detalhado se falhar
+            # Adicionei timeout=60s para não ficar travado infinitamente se a rede cair
+            response = requests.get(url, params=params, timeout=60)
+
             if response.status_code != 200:
                 logger.error(f"❌ ERRO META API (Conta {clean_id}): {response.text}")
                 response.raise_for_status()
 
             data = response.json()
-            check_rate_limit(response.headers)
 
             if "data" in data:
+                current_batch = len(data["data"])
                 all_data.extend(data["data"])
+                # Logger detalhado para ver se está andando
+                logger.info(
+                    f"   ✅ Página {page_count}: +{current_batch} registros (Total: {len(all_data)})"
+                )
+
+            # Rate Limit Check
+            if "x-fb-ads-insights-throttle" in response.headers:
+                try:
+                    throttle = json.loads(
+                        response.headers["x-fb-ads-insights-throttle"]
+                    )
+                    acc_util = throttle.get("acc_id_util_pct", 0)
+                    if acc_util > 90:
+                        logger.warning(
+                            f"⚠️ Rate limit alto ({acc_util}%). Pausando 3 min..."
+                        )
+                        time.sleep(180)
+                except:
+                    pass
 
             if "paging" in data and "next" in data["paging"]:
                 url = data["paging"]["next"]
                 params = {}
             else:
+                logger.info(
+                    f"🏁 Fim da paginação. Total extraído: {len(all_data)} registros."
+                )
                 break
 
+        except requests.exceptions.Timeout:
+            logger.error(
+                f"❌ Timeout ao baixar página {page_count}. Tentando novamente em 30s..."
+            )
+            time.sleep(30)
+            continue  # Tenta a mesma página de novo
+
         except Exception as e:
-            logger.error(f"Falha na requisição: {e}")
+            logger.error(f"❌ Falha fatal na requisição: {e}")
             break
 
     return all_data
