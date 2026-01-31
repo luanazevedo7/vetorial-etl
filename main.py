@@ -4,18 +4,27 @@ import requests
 import pandas as pd
 import schedule
 import logging
+import pytz  # Para corrigir a hora
 from datetime import datetime, timedelta
 from sqlalchemy import create_engine, text
 import json
 
-# Configuração de Logs
+
+# --- CONFIGURAÇÃO DE LOGS (HORA BRASIL) ---
+def brazil_time(*args):
+    return datetime.now(pytz.timezone("America/Sao_Paulo")).timetuple()
+
+
+logging.Formatter.converter = brazil_time
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
 )
 logger = logging.getLogger(__name__)
 
 # --- CONFIGURAÇÕES DE AMBIENTE ---
-DB_HOST = os.getenv("DB_HOST", "haproxy")
+DB_HOST = os.getenv("DB_HOST", "patroni_primary")
 DB_PORT = os.getenv("DB_PORT", "5432")
 DB_NAME = os.getenv("DB_NAME", "relatorio_meta_ads")
 DB_USER = os.getenv("DB_USER", "postgres")
@@ -40,133 +49,37 @@ def get_date_range():
     return since, until
 
 
-def check_rate_limit(headers):
-    if "x-fb-ads-insights-throttle" in headers:
-        try:
-            throttle = json.loads(headers["x-fb-ads-insights-throttle"])
-            acc_util = throttle.get("acc_id_util_pct", 0)
-            if acc_util > 80:
-                logger.warning(f"Rate limit alto: {acc_util}%. Pausa de 2 min.")
-                time.sleep(120)
-        except:
-            pass
-
-
-def fetch_meta_data(account_id, since, until):
-    # 1. GARANTIA DO PREFIXO act_
-    clean_id = account_id.strip()
-    if not clean_id.startswith("act_"):
-        clean_id = f"act_{clean_id}"
-
-    url = f"{BASE_URL}/{clean_id}/insights"
-
-    fields = [
-        "campaign_id",
-        "campaign_name",
-        "adset_id",
-        "adset_name",
-        "ad_id",
-        "ad_name",
-        "impressions",
-        "spend",
-        "inline_link_clicks",
-        "actions",
-        "action_values",
-        "video_p50_watched_actions",
-        "video_p75_watched_actions",
-    ]
-
-    params = {
-        "access_token": META_ACCESS_TOKEN,
-        "level": "ad",
-        "time_range": json.dumps({"since": since, "until": until}),
-        "time_increment": 1,
-        "fields": ",".join(fields),
-        "breakdowns": "publisher_platform,platform_position",
-        "limit": 50,  # Reduzi para 50 para evitar Timeout da Meta em queries pesadas
-    }
-
-    all_data = []
-    page_count = 0  # Contador de páginas
-
-    while True:
-        try:
-            page_count += 1
-            if page_count % 5 == 0:  # Avisa a cada 5 páginas para não poluir demais
-                logger.info(
-                    f"   ⏳ Baixando página {page_count} da conta {clean_id}..."
-                )
-
-            # Adicionei timeout=60s para não ficar travado infinitamente se a rede cair
-            response = requests.get(url, params=params, timeout=60)
-
-            if response.status_code != 200:
-                logger.error(f"❌ ERRO META API (Conta {clean_id}): {response.text}")
-                response.raise_for_status()
-
-            data = response.json()
-
-            if "data" in data:
-                current_batch = len(data["data"])
-                all_data.extend(data["data"])
-                # Logger detalhado para ver se está andando
-                logger.info(
-                    f"   ✅ Página {page_count}: +{current_batch} registros (Total: {len(all_data)})"
-                )
-
-            # Rate Limit Check
-            if "x-fb-ads-insights-throttle" in response.headers:
-                try:
-                    throttle = json.loads(
-                        response.headers["x-fb-ads-insights-throttle"]
-                    )
-                    acc_util = throttle.get("acc_id_util_pct", 0)
-                    if acc_util > 90:
-                        logger.warning(
-                            f"⚠️ Rate limit alto ({acc_util}%). Pausando 3 min..."
-                        )
-                        time.sleep(180)
-                except:
-                    pass
-
-            if "paging" in data and "next" in data["paging"]:
-                url = data["paging"]["next"]
-                params = {}
-            else:
-                logger.info(
-                    f"🏁 Fim da paginação. Total extraído: {len(all_data)} registros."
-                )
-                break
-
-        except requests.exceptions.Timeout:
-            logger.error(
-                f"❌ Timeout ao baixar página {page_count}. Tentando novamente em 30s..."
+def clear_existing_data(account_id, since, until):
+    """Apaga os dados do período ANTES de começar a baixar, para evitar duplicidade"""
+    try:
+        with engine.begin() as conn:
+            conn.execute(
+                text(
+                    "DELETE FROM insights_meta_ads WHERE account_id = :acc AND data_registro >= :s AND data_registro <= :u"
+                ),
+                {"acc": account_id, "s": since, "u": until},
             )
-            time.sleep(30)
-            continue  # Tenta a mesma página de novo
-
-        except Exception as e:
-            logger.error(f"❌ Falha fatal na requisição: {e}")
-            break
-
-    return all_data
+        logger.info(f"🧹 Limpeza inicial realizada para a conta {account_id}")
+    except Exception as e:
+        logger.error(f"Erro ao limpar dados antigos: {e}")
 
 
-def process_actions(row, action_type_target):
-    if isinstance(row, list):
-        for item in row:
-            if item.get("action_type") == action_type_target:
-                return float(item.get("value", 0))
-    return 0.0
+def transform_and_load(raw_data_page, account_id):
+    """Processa UMA página e salva imediatamente para liberar memória"""
+    if not raw_data_page:
+        return
 
-
-def transform_data(raw_data, account_id):
-    if not raw_data:
-        return pd.DataFrame()
-
-    df = pd.DataFrame(raw_data)
+    df = pd.DataFrame(raw_data_page)
     df["account_id"] = account_id
     df["nome_conta"] = f"Conta {account_id}"
+
+    # Funções auxiliares de transformação
+    def process_actions(row, action_type_target):
+        if isinstance(row, list):
+            for item in row:
+                if item.get("action_type") == action_type_target:
+                    return float(item.get("value", 0))
+        return 0.0
 
     # Tratamento numérico
     df["impressoes"] = pd.to_numeric(df.get("impressions", 0)).fillna(0)
@@ -174,37 +87,54 @@ def transform_data(raw_data, account_id):
     df["clique_link"] = pd.to_numeric(df.get("inline_link_clicks", 0)).fillna(0)
 
     # Extração de Actions
-    df["lp_view"] = df["actions"].apply(
-        lambda x: process_actions(x, "landing_page_view")
-    )
-    df["lead"] = df["actions"].apply(lambda x: process_actions(x, "lead"))
-    df["contato"] = df["actions"].apply(lambda x: process_actions(x, "contact"))
-    df["conversas_iniciadas"] = df["actions"].apply(
-        lambda x: process_actions(
-            x, "onsite_conversion.messaging_conversation_started_7d"
+    if "actions" in df.columns:
+        df["lp_view"] = df["actions"].apply(
+            lambda x: process_actions(x, "landing_page_view")
         )
-    )
-    df["novos_contatos_mensagem"] = df["actions"].apply(
-        lambda x: process_actions(x, "onsite_conversion.messaging_first_reply")
-    )
-    df["seguidores_instagram"] = df["actions"].apply(
-        lambda x: process_actions(x, "follow")
-    )
-    df["visitas_perfil"] = df["actions"].apply(
-        lambda x: process_actions(x, "profile_visit")
-    )
-    df["initiate_checkout"] = df["actions"].apply(
-        lambda x: process_actions(x, "initiate_checkout")
-    )
-    df["compras"] = df["actions"].apply(lambda x: process_actions(x, "purchase"))
-    df["cliques_saida"] = df["actions"].apply(
-        lambda x: process_actions(x, "outbound_click")
-    )
+        df["lead"] = df["actions"].apply(lambda x: process_actions(x, "lead"))
+        df["contato"] = df["actions"].apply(lambda x: process_actions(x, "contact"))
+        df["conversas_iniciadas"] = df["actions"].apply(
+            lambda x: process_actions(
+                x, "onsite_conversion.messaging_conversation_started_7d"
+            )
+        )
+        df["novos_contatos_mensagem"] = df["actions"].apply(
+            lambda x: process_actions(x, "onsite_conversion.messaging_first_reply")
+        )
+        df["seguidores_instagram"] = df["actions"].apply(
+            lambda x: process_actions(x, "follow")
+        )
+        df["visitas_perfil"] = df["actions"].apply(
+            lambda x: process_actions(x, "profile_visit")
+        )
+        df["initiate_checkout"] = df["actions"].apply(
+            lambda x: process_actions(x, "initiate_checkout")
+        )
+        df["compras"] = df["actions"].apply(lambda x: process_actions(x, "purchase"))
+        df["cliques_saida"] = df["actions"].apply(
+            lambda x: process_actions(x, "outbound_click")
+        )
+        df["videoview_3s"] = df["actions"].apply(
+            lambda x: process_actions(x, "video_view")
+        )
+    else:
+        # Se actions não vier, preenche tudo com 0
+        cols_actions = [
+            "lp_view",
+            "lead",
+            "contato",
+            "conversas_iniciadas",
+            "novos_contatos_mensagem",
+            "seguidores_instagram",
+            "visitas_perfil",
+            "initiate_checkout",
+            "compras",
+            "cliques_saida",
+            "videoview_3s",
+        ]
+        for c in cols_actions:
+            df[c] = 0.0
 
-    # Video Views (3s vem dentro de actions como video_view)
-    df["videoview_3s"] = df["actions"].apply(lambda x: process_actions(x, "video_view"))
-
-    # Campos que removemos da API, preenchemos com 0 para não quebrar o banco
     df["valor_compra"] = 0.0
     df["videoview_50"] = 0.0
     df["videoview_75"] = 0.0
@@ -224,7 +154,6 @@ def transform_data(raw_data, account_id):
         inplace=True,
     )
 
-    # Preencher nulos finais
     final_cols = [
         "account_id",
         "nome_conta",
@@ -260,43 +189,111 @@ def transform_data(raw_data, account_id):
         if col not in df.columns:
             df[col] = 0
 
-    return df[final_cols]
+    # SALVAMENTO IMEDIATO DA PÁGINA
+    try:
+        with engine.begin() as conn:
+            df[final_cols].to_sql(
+                "insights_meta_ads",
+                conn,
+                if_exists="append",
+                index=False,
+                method="multi",
+                chunksize=1000,
+            )
+    except Exception as e:
+        logger.error(f"Erro ao salvar página no banco: {e}")
 
 
-def load_to_postgres(df, account_id, since, until):
-    if df.empty:
-        return
-    with engine.begin() as conn:
-        conn.execute(
-            text(
-                "DELETE FROM insights_meta_ads WHERE account_id = :acc AND data_registro >= :s AND data_registro <= :u"
-            ),
-            {"acc": account_id, "s": since, "u": until},
-        )
-        df.to_sql(
-            "insights_meta_ads",
-            conn,
-            if_exists="append",
-            index=False,
-            method="multi",
-            chunksize=1000,
-        )
-        logger.info(f"✅ {len(df)} registros salvos no banco!")
+def fetch_and_process(account_id, since, until):
+    clean_id = account_id.strip()
+    if not clean_id.startswith("act_"):
+        clean_id = f"act_{clean_id}"
+
+    # 1. LIMPA DADOS ANTIGOS ANTES DE COMEÇAR
+    clear_existing_data(clean_id, since, until)
+
+    url = f"{BASE_URL}/{clean_id}/insights"
+
+    fields = [
+        "campaign_id",
+        "campaign_name",
+        "adset_id",
+        "adset_name",
+        "ad_id",
+        "ad_name",
+        "impressions",
+        "spend",
+        "inline_link_clicks",
+        "actions",
+    ]
+
+    params = {
+        "access_token": META_ACCESS_TOKEN,
+        "level": "ad",
+        "time_range": json.dumps({"since": since, "until": until}),
+        "time_increment": 1,
+        "fields": ",".join(fields),
+        "breakdowns": "publisher_platform,platform_position",
+        "limit": 50,  # Mantém lote pequeno para economizar memória
+    }
+
+    page_count = 0
+    total_saved = 0
+
+    while True:
+        try:
+            page_count += 1
+            response = requests.get(url, params=params, timeout=60)
+
+            if response.status_code != 200:
+                logger.error(f"❌ ERRO META API (Conta {clean_id}): {response.text}")
+                break  # Para essa conta e vai para a próxima
+
+            data = response.json()
+
+            if "data" in data and len(data["data"]) > 0:
+                # PROCESSA E SALVA AGORA!
+                transform_and_load(data["data"], clean_id)
+                current_batch = len(data["data"])
+                total_saved += current_batch
+                logger.info(
+                    f"   💾 Página {page_count} salva: +{current_batch} registros (Total na conta: {total_saved})"
+                )
+
+            # Rate Limit
+            if "x-fb-ads-insights-throttle" in response.headers:
+                try:
+                    throttle = json.loads(
+                        response.headers["x-fb-ads-insights-throttle"]
+                    )
+                    if throttle.get("acc_id_util_pct", 0) > 90:
+                        logger.warning("⚠️ Rate limit alto. Pausando 3 min...")
+                        time.sleep(180)
+                except:
+                    pass
+
+            if "paging" in data and "next" in data["paging"]:
+                url = data["paging"]["next"]
+                params = {}
+            else:
+                logger.info(
+                    f"🏁 Fim da conta {clean_id}. Total processado: {total_saved} registros."
+                )
+                break
+
+        except Exception as e:
+            logger.error(f"❌ Falha fatal na página {page_count}: {e}")
+            break
 
 
 def run_etl():
-    logger.info("INICIANDO JOB ETL META ADS")
+    logger.info("INICIANDO JOB ETL META ADS (Modo Streaming - Baixa RAM)")
     since, until = get_date_range()
     accounts = [acc.strip() for acc in AD_ACCOUNT_ID_LIST if acc.strip()]
 
     for account_id in accounts:
         logger.info(f"--- Processando conta: {account_id} ---")
-        data = fetch_meta_data(account_id, since, until)
-        if data:
-            df = transform_data(data, account_id)
-            load_to_postgres(df, account_id, since, until)
-        else:
-            logger.warning(f"Nenhum dado encontrado para {account_id}")
+        fetch_and_process(account_id, since, until)
 
     logger.info("JOB FINALIZADO - Aguardando 4 horas")
 
