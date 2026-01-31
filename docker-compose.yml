@@ -27,7 +27,7 @@ services:
         delay: 10s
         failure_action: rollback
     environment:
-      - DB_HOST=${DB_HOST:-haproxy}
+      - DB_HOST=${DB_HOST:-patroni_primary}
       - DB_PORT=${DB_PORT:-5432}
       - DB_NAME=${DB_NAME:-relatorio_meta_ads}
       - DB_USER=${DB_USER}
@@ -35,7 +35,7 @@ services:
       - META_ACCESS_TOKEN=${META_ACCESS_TOKEN}
       - AD_ACCOUNTS=${AD_ACCOUNTS}
     networks:
-      - internal_network
+      - network_public
     logging:
       driver: "json-file"
       options:
@@ -46,5 +46,5 @@ services:
       - "com.docker.service.name=meta-etl"
 
 networks:
-  internal_network:
+  network_public:
     external: true
