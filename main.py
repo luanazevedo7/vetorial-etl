@@ -9,7 +9,7 @@ from sqlalchemy import create_engine, text
 import json
 
 
-# --- CONFIGURAÇÃO DE LOGS (HORA NO BRASIL) ---
+# --- CONFIGURAÇÃO DE LOGS (HORA BRASIL) ---
 class BrazilFormatter(logging.Formatter):
     def formatTime(self, record, datefmt=None):
         dt = datetime.fromtimestamp(record.created, timezone.utc) - timedelta(hours=3)
