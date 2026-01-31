@@ -3,7 +3,7 @@ version: '3.8'
 services:
   meta_etl_worker:
     # Garanta que seu usuário do Docker Hub esteja aqui ou nas variáveis
-    image: ${DOCKER_USERNAME}/etl-meta-ads:latest
+    image: ${DOCKER_USERNAME}/etl-meta-ads:v2
     deploy:
       mode: replicated
       replicas: 1
