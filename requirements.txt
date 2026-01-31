@@ -4,3 +4,4 @@ sqlalchemy==2.0.25
 psycopg2-binary==2.9.9
 schedule==1.2.1
 python-dotenv==1.0.0
+pytz==2025.1 
