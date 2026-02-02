@@ -42,10 +42,16 @@ engine = create_engine(
 
 
 def get_date_range():
-    today = datetime.today()
-    first = today.replace(day=1)
-    previous_month = (first - timedelta(days=1)).replace(day=1)
-    return previous_month.strftime("%Y-%m-%d"), today.strftime("%Y-%m-%d")
+    # Forçando o robô a buscar desde 01 de Dezembro até hoje
+    # Depois que ele rodar uma vez, você volta para a versão anterior
+    return "2025-12-01", datetime.today().strftime("%Y-%m-%d")
+
+
+# def get_date_range():     # Versão anterior, voltar pra ele apartir de amanhã
+#     today = datetime.today()
+#     first = today.replace(day=1)
+#     previous_month = (first - timedelta(days=1)).replace(day=1)
+#     return previous_month.strftime("%Y-%m-%d"), today.strftime("%Y-%m-%d")
 
 
 def clear_existing_data(account_id, since, until):
