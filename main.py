@@ -25,7 +25,7 @@ if logger.hasHandlers():
 logger.addHandler(handler)
 
 # --- CONFIGURAÇÕES DE AMBIENTE ---
-DB_HOST = os.getenv("DB_HOST", "patroni-primary")  # Ajustado para o host que funcionou
+DB_HOST = os.getenv("DB_HOST", "patroni-primary")
 DB_PORT = os.getenv("DB_PORT", "5432")
 DB_NAME = os.getenv("DB_NAME", "relatorio_meta_ads")
 DB_USER = os.getenv("DB_USER", "postgres")
@@ -33,7 +33,7 @@ DB_PASS = os.getenv("DB_PASS")
 META_ACCESS_TOKEN = os.getenv("META_ACCESS_TOKEN")
 AD_ACCOUNT_ID_LIST = os.getenv("AD_ACCOUNTS", "").split(",")
 
-API_VERSION = "v24.0"
+API_VERSION = "v21.0"
 BASE_URL = f"https://graph.facebook.com/{API_VERSION}"
 
 engine = create_engine(
@@ -69,51 +69,59 @@ def transform_and_load(raw_data_page, account_id):
     df["account_id"] = account_id
     df["nome_conta"] = f"Conta {account_id}"
 
-    def process_actions(row, action_type_target):
-        if isinstance(row, list):
-            for item in row:
-                if item.get("action_type") == action_type_target:
-                    return float(item.get("value", 0))
-        return 0.0
+    # Mapeamento robusto baseado no diagnóstico de API realizado pelo Luan
+    mapping = {
+        "lead": [
+            "lead",
+            "onsite_conversion.lead_grouped",
+            "offsite_conversion.fb_pixel_lead",
+            "onsite_web_lead",
+            "onsite_conversion.lead",
+            "offsite_complete_registration_add_meta_leads",
+        ],
+        "lp_view": ["landing_page_view", "omni_landing_page_view"],
+        "conversas_iniciadas": ["onsite_conversion.messaging_conversation_started_7d"],
+        "novos_contatos_mensagem": ["onsite_conversion.messaging_first_reply"],
+        "compras": [
+            "purchase",
+            "onsite_web_purchase",
+            "offsite_conversion.fb_pixel_purchase",
+            "omni_purchase",
+        ],
+        "videoview_3s": ["video_view"],
+        "cliques_saida": ["outbound_click", "link_click"],
+    }
 
-    for col in ["impressions", "spend", "inline_link_clicks"]:
+    # Processamento de métricas numéricas simples
+    for col in ["impressions", "spend"]:
         df[col] = pd.to_numeric(df.get(col, 0)).fillna(0)
 
+    # Processamento de ações (Conversões) - Somando múltiplos tipos
     if "actions" in df.columns:
-        mapping = {
-            "lp_view": "landing_page_view",
-            "lead": "lead",
-            "contato": "contact",
-            "conversas_iniciadas": "onsite_conversion.messaging_conversation_started_7d",
-            "novos_contatos_mensagem": "onsite_conversion.messaging_first_reply",
-            "seguidores_instagram": "follow",
-            "visitas_perfil": "profile_visit",
-            "initiate_checkout": "initiate_checkout",
-            "compras": "purchase",
-            "cliques_saida": "outbound_click",
-            "videoview_3s": "video_view",
-        }
-        for col, key in mapping.items():
-            df[col] = df["actions"].apply(lambda x: process_actions(x, key))
+        for target_col, api_keys in mapping.items():
+            df[target_col] = df["actions"].apply(
+                lambda x: sum(
+                    [
+                        float(item.get("value", 0))
+                        for item in x
+                        if item.get("action_type") in api_keys
+                    ]
+                )
+                if isinstance(x, list)
+                else 0.0
+            )
     else:
-        for c in [
-            "lp_view",
-            "lead",
-            "contato",
-            "conversas_iniciadas",
-            "novos_contatos_mensagem",
-            "seguidores_instagram",
-            "visitas_perfil",
-            "initiate_checkout",
-            "compras",
-            "cliques_saida",
-            "videoview_3s",
-        ]:
-            df[c] = 0.0
+        for target_col in mapping.keys():
+            df[target_col] = 0.0
 
+    # Inicialização de colunas extras para manter compatibilidade com o banco
     df["valor_compra"] = 0.0
     df["videoview_50"] = 0.0
     df["videoview_75"] = 0.0
+    df["contato"] = 0.0
+    df["initiate_checkout"] = 0.0
+    df["seguidores_instagram"] = 0.0
+    df["visitas_perfil"] = 0.0
 
     df.rename(
         columns={
@@ -128,7 +136,7 @@ def transform_and_load(raw_data_page, account_id):
             "platform_position": "posicionamento",
             "spend": "valor_gasto",
             "impressions": "impressoes",
-            "inline_link_clicks": "clique_link",
+            "cliques_saida": "clique_link",  # Mapeado para clique_link no banco
         },
         inplace=True,
     )
@@ -143,7 +151,6 @@ def transform_and_load(raw_data_page, account_id):
         "conjunto_anuncios",
         "anuncio",
         "impressoes",
-        "cliques_saida",
         "clique_link",
         "lp_view",
         "lead",
@@ -194,9 +201,9 @@ def fetch_and_process(account_id, since, until):
         "level": "ad",
         "time_range": json.dumps({"since": since, "until": until}),
         "time_increment": 1,
-        "fields": "campaign_id,campaign_name,adset_id,adset_name,ad_id,ad_name,impressions,spend,inline_link_clicks,actions",
+        "fields": "campaign_id,campaign_name,adset_id,adset_name,ad_id,ad_name,impressions,spend,actions",
         "breakdowns": "publisher_platform,platform_position",
-        "limit": 25,  # AJUSTE PARA EVITAR TIMEOUT DA META
+        "limit": 25,  # Mantido em 25 para evitar os timeouts que vimos na v2/v3
     }
 
     page, total = 0, 0
@@ -228,12 +235,12 @@ def fetch_and_process(account_id, since, until):
 
 
 def run_etl():
-    logger.info("🚀 INICIANDO ETL (Modo Otimizado - Limit 25)")
+    logger.info("🚀 INICIANDO ETL (v6 - Mapeamento de Leads Otimizado)")
     since, until = get_date_range()
     accounts = [acc.strip() for acc in AD_ACCOUNT_ID_LIST if acc.strip()]
     for account_id in accounts:
         fetch_and_process(account_id, since, until)
-    logger.info("✅ JOB FINALIZADO")
+    logger.info("✅ JOB FINALIZADO - Próxima execução em 4h")
 
 
 run_etl()
